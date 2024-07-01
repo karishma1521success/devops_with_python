@@ -70,3 +70,21 @@ print(new_dict)
 
 new_dict = dict.fromkeys(keys, defaultValue )
 print(new_dict)
+
+#list of dicitonary
+instances_info = [
+    {
+        "instanceid" :"instance-001", 
+        "size" : "t2.micro" 
+    },
+    {
+        "instance_id":"instance-002", 
+        "size": "t2.large" 
+    },
+    {
+        "instance_id":"instance-001", 
+        "size": "t2.large" 
+    }
+]
+
+print(instances_info)

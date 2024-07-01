@@ -1,4 +1,4 @@
-name = "karishma"
+name = "karishma is good"
 
 length = len(name)
 
@@ -10,4 +10,4 @@ for i in range(length):
 
 print(list)
 
-print(name.split(0,length))
+print(name.split(' '))  # convert string into list with split method
