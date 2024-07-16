@@ -14,10 +14,7 @@ open any IDE (vs code, codespaces) and autheticate IDE environment with aws (to 
 * Go to the SECURITY CREDENTAILS on aws 
 * you will find access and secret key in the IAM users section if not then create
 ****************************
-AWS Access Key ID [****************OOVI]: AKIATQKVFO7IUM6HGAFM
-AWS Secret Access Key [****************oPlB]: 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
-Default region name [ap-south-1]: 
-Default output format [json]: 
+ 
 
 # step3
 1. make sure install boto3 first
