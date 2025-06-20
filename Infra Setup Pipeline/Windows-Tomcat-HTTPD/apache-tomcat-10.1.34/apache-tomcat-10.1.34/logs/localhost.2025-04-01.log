@@ -1,1 +1,0 @@
-01-Apr-2025 10:34:30.314 SEVERE [main] org.apache.tomcat.util.descriptor.web.SecurityConstraint.findUncoveredHttpMethods For security constraints with URL pattern [/*] only the HTTP methods [DELETE OPTIONS] are covered. All other methods are uncovered.

@@ -1,2 +1,0 @@
-LAN,Customer Name,Phone,Email,Tot. Outstanding,EMI Amount,EMI Date,Amount Paid,Mode of Payment,Payment Date,Payment Status,Vertical,Channel,Language
-${apac_card_number},${party_name},${party_mobile_number},${email_id},${outstanding_balance},${emi_amt},${emi_date},${amount},${payment_mode},${payment_datetime},${status},{vertical},{communication_type},{verbiage_language}
