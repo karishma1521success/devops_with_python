@@ -1,0 +1,7 @@
+127.0.0.1 - admin [01/Apr/2025:10:34:46 +0530] "GET /manager/html HTTP/1.1" 200 10857
+127.0.0.1 - - [01/Apr/2025:10:34:56 +0530] "GET /manager/html HTTP/1.1" 401 2562
+127.0.0.1 - admin [01/Apr/2025:10:35:00 +0530] "GET /manager/html HTTP/1.1" 200 11561
+127.0.0.1 - - [01/Apr/2025:10:35:00 +0530] "GET /manager/css/manager.css HTTP/1.1" 200 2946
+127.0.0.1 - - [01/Apr/2025:10:35:00 +0530] "GET /manager/images/tomcat.svg HTTP/1.1" 200 68761
+127.0.0.1 - - [01/Apr/2025:10:35:00 +0530] "GET /manager/images/asf-logo.svg HTTP/1.1" 200 20712
+127.0.0.1 - - [01/Apr/2025:10:35:00 +0530] "GET /favicon.ico HTTP/1.1" 200 21630

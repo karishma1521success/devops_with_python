@@ -1,0 +1,161 @@
+13-Mar-2025 11:59:07.097 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.91
+13-Mar-2025 11:59:07.099 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Jul 2 2024 12:35:51 UTC
+13-Mar-2025 11:59:07.099 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.91.0
+13-Mar-2025 11:59:07.099 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+13-Mar-2025 11:59:07.100 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            6.11.0-19-generic
+13-Mar-2025 11:59:07.100 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+13-Mar-2025 11:59:07.100 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-11-openjdk-amd64
+13-Mar-2025 11:59:07.101 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           11.0.26+4-post-Ubuntu-1ubuntu124.04
+13-Mar-2025 11:59:07.101 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Ubuntu
+13-Mar-2025 11:59:07.101 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened
+13-Mar-2025 11:59:07.102 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened
+13-Mar-2025 11:59:07.104 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+13-Mar-2025 11:59:07.104 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+13-Mar-2025 11:59:07.105 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+13-Mar-2025 11:59:07.105 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+13-Mar-2025 11:59:07.105 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+13-Mar-2025 11:59:07.105 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/conf/logging.properties
+13-Mar-2025 11:59:07.105 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseG1GC
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+ExplicitGCInvokesConcurrent
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:MaxGCPauseMillis=500
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xms2048M
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx2048M
+13-Mar-2025 11:59:07.106 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xlog:gc*,safepoint=info:file=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/logs/gc_%p_%t.log:time,uptime:filecount=10
+13-Mar-2025 11:59:07.107 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+HeapDumpOnOutOfMemoryError
+13-Mar-2025 11:59:07.108 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:HeapDumpPath=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/heapdumps
+13-Mar-2025 11:59:07.109 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+13-Mar-2025 11:59:07.109 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+13-Mar-2025 11:59:07.109 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+13-Mar-2025 11:59:07.110 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote
+13-Mar-2025 11:59:07.110 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.port=10065
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.rmi.port=10065
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.ssl=false
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.authenticate=false
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened
+13-Mar-2025 11:59:07.111 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/temp
+13-Mar-2025 11:59:07.113 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The Apache Tomcat Native library which allows using OpenSSL was not found on the java.library.path: [/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib]
+13-Mar-2025 11:59:07.363 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8888"]
+13-Mar-2025 11:59:07.404 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["ajp-nio-0.0.0.0-8009"]
+13-Mar-2025 11:59:07.406 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [581] milliseconds
+13-Mar-2025 11:59:07.502 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+13-Mar-2025 11:59:07.503 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.91]
+13-Mar-2025 11:59:07.510 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/webapps/manager]
+13-Mar-2025 11:59:07.841 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/webapps/manager] has finished in [330] ms
+13-Mar-2025 11:59:07.841 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/webapps/ROOT]
+13-Mar-2025 11:59:07.865 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/webapps/ROOT] has finished in [23] ms
+13-Mar-2025 11:59:07.870 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8888"]
+13-Mar-2025 11:59:07.880 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["ajp-nio-0.0.0.0-8009"]
+13-Mar-2025 11:59:07.883 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [477] milliseconds
+13-Mar-2025 12:25:08.021 INFO [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Reloading memory user database [UserDatabase] from updated source [file:/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/conf/tomcat-users.xml]
+13-Mar-2025 12:25:08.022 SEVERE [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.open The specified user database [conf/tomcat-users.xml] could not be found
+13-Mar-2025 12:25:18.023 INFO [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Reloading memory user database [UserDatabase] from updated source [file:/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/conf/tomcat-users.xml]
+13-Mar-2025 12:25:48.028 INFO [Catalina-utility-1] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Reloading memory user database [UserDatabase] from updated source [file:/home/gourav/Downloads/trash/apache-tomcat-9.0.91-clone-hardened/conf/tomcat-users.xml]
+13-Mar-2025 12:25:48.028 SEVERE [Catalina-utility-1] org.apache.catalina.users.MemoryUserDatabase.open The specified user database [conf/tomcat-users.xml] could not be found
+13-Mar-2025 12:25:48.528 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Undeploying context []
+13-Mar-2025 12:25:48.546 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc JDBC driver de-registration failed for web application [ROOT]
+	java.lang.NullPointerException
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1581)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1525)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1463)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:410)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:231)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4711)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:231)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:659)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1438)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1367)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1620)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:308)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:973)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1172)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1176)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1154)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:305)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:829)
+13-Mar-2025 12:25:49.059 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.undeploy Undeploying context [/manager]
+13-Mar-2025 12:25:49.064 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc JDBC driver de-registration failed for web application [manager]
+	java.lang.NullPointerException
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc(WebappClassLoaderBase.java:1581)
+		at org.apache.catalina.loader.WebappClassLoaderBase.clearReferences(WebappClassLoaderBase.java:1525)
+		at org.apache.catalina.loader.WebappClassLoaderBase.stop(WebappClassLoaderBase.java:1463)
+		at org.apache.catalina.loader.WebappLoader.stopInternal(WebappLoader.java:410)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:231)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:4711)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:231)
+		at org.apache.catalina.core.ContainerBase.removeChild(ContainerBase.java:659)
+		at org.apache.catalina.startup.HostConfig.undeploy(HostConfig.java:1438)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1367)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1620)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:308)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:973)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1172)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1176)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1154)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+		at java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:305)
+		at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)
+		at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+		at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+		at java.base/java.lang.Thread.run(Thread.java:829)
+13-Mar-2025 12:37:03.287 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.91
+13-Mar-2025 12:37:03.291 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Jul 2 2024 12:35:51 UTC
+13-Mar-2025 12:37:03.291 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.91.0
+13-Mar-2025 12:37:03.291 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+13-Mar-2025 12:37:03.291 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            6.11.0-19-generic
+13-Mar-2025 12:37:03.292 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+13-Mar-2025 12:37:03.292 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-11-openjdk-amd64
+13-Mar-2025 12:37:03.292 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           11.0.26+4-post-Ubuntu-1ubuntu124.04
+13-Mar-2025 12:37:03.292 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Ubuntu
+13-Mar-2025 12:37:03.292 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /home/gourav/tomcat/apache-tomcat-9.0.91-gourav
+13-Mar-2025 12:37:03.293 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /home/gourav/tomcat/apache-tomcat-9.0.91-gourav
+13-Mar-2025 12:37:03.293 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/conf/logging.properties
+13-Mar-2025 12:37:03.294 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+UseG1GC
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+ExplicitGCInvokesConcurrent
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:MaxGCPauseMillis=500
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xms2048M
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xmx2048M
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Xlog:gc*,safepoint=info:file=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/logs/gc_%p_%t.log:time,uptime:filecount=10
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:+HeapDumpOnOutOfMemoryError
+13-Mar-2025 12:37:03.295 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -XX:HeapDumpPath=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/heapdumps
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.port=10065
+13-Mar-2025 12:37:03.296 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.rmi.port=10065
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.ssl=false
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcom.sun.management.jmxremote.authenticate=false
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav
+13-Mar-2025 12:37:03.297 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/temp
+13-Mar-2025 12:37:03.299 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The Apache Tomcat Native library which allows using OpenSSL was not found on the java.library.path: [/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib]
+13-Mar-2025 12:37:03.676 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8888"]
+13-Mar-2025 12:37:03.752 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["ajp-nio-0.0.0.0-8009"]
+13-Mar-2025 12:37:03.754 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [762] milliseconds
+13-Mar-2025 12:37:03.883 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+13-Mar-2025 12:37:03.884 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.91]
+13-Mar-2025 12:37:03.904 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/webapps/manager]
+13-Mar-2025 12:37:04.741 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/webapps/manager] has finished in [838] ms
+13-Mar-2025 12:37:04.742 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/webapps/ROOT]
+13-Mar-2025 12:37:04.783 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/tomcat/apache-tomcat-9.0.91-gourav/webapps/ROOT] has finished in [41] ms
+13-Mar-2025 12:37:04.792 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8888"]
+13-Mar-2025 12:37:04.834 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["ajp-nio-0.0.0.0-8009"]
+13-Mar-2025 12:37:04.850 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [1095] milliseconds

@@ -1,0 +1,84 @@
+20-Jun-2025 11:31:04.971 WARNING [main] org.apache.tomcat.util.digester.Digester.endElement No rules found matching [Server/Service/Connector/SSLHostConfig/Ciphers/Cipher]
+20-Jun-2025 11:31:04.972 WARNING [main] org.apache.tomcat.util.digester.Digester.endElement No rules found matching [Server/Service/Connector/SSLHostConfig/Ciphers/Cipher]
+20-Jun-2025 11:31:04.973 WARNING [main] org.apache.tomcat.util.digester.Digester.endElement No rules found matching [Server/Service/Connector/SSLHostConfig/Ciphers]
+20-Jun-2025 11:31:05.010 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/10.1.40
+20-Jun-2025 11:31:05.010 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Apr 1 2025 17:20:53 UTC
+20-Jun-2025 11:31:05.010 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 10.1.40.0
+20-Jun-2025 11:31:05.010 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Linux
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            6.11.0-26-generic
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /usr/lib/jvm/java-11-openjdk-amd64
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           11.0.27+6-post-Ubuntu-0ubuntu124.04
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Ubuntu
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40
+20-Jun-2025 11:31:05.011 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/conf/logging.properties
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.io.useCanonCaches=false
+20-Jun-2025 11:31:05.013 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40
+20-Jun-2025 11:31:05.014 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/temp
+20-Jun-2025 11:31:05.015 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The Apache Tomcat Native library which allows using OpenSSL was not found on the java.library.path: [/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib]
+20-Jun-2025 11:31:05.171 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-2020"]
+20-Jun-2025 11:31:05.194 INFO [main] org.apache.coyote.http11.AbstractHttp11Protocol.configureUpgradeProtocol The ["https-jsse-nio-2444"] connector has been configured to support negotiation to [h2] via ALPN
+20-Jun-2025 11:31:05.194 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["https-jsse-nio-2444"]
+20-Jun-2025 11:31:05.326 SEVERE [main] org.apache.catalina.util.LifecycleBase.handleSubClassException Failed to initialize component [Connector["https-jsse-nio-2444"]]
+	org.apache.catalina.LifecycleException: Protocol handler initialization failed
+		at org.apache.catalina.connector.Connector.initInternal(Connector.java:1051)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.core.StandardService.initInternal(StandardService.java:522)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.core.StandardServer.initInternal(StandardServer.java:957)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:122)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:712)
+		at org.apache.catalina.startup.Catalina.load(Catalina.java:735)
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+		at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+		at org.apache.catalina.startup.Bootstrap.load(Bootstrap.java:302)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:475)
+	Caused by: java.lang.IllegalArgumentException: /home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/conf/application.keystore (No such file or directory)
+		at org.apache.tomcat.util.net.AbstractJsseEndpoint.createSSLContext(AbstractJsseEndpoint.java:114)
+		at org.apache.tomcat.util.net.AbstractJsseEndpoint.initialiseSsl(AbstractJsseEndpoint.java:70)
+		at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:200)
+		at org.apache.tomcat.util.net.AbstractEndpoint.bindWithCleanup(AbstractEndpoint.java:1304)
+		at org.apache.tomcat.util.net.AbstractEndpoint.init(AbstractEndpoint.java:1317)
+		at org.apache.coyote.AbstractProtocol.init(AbstractProtocol.java:633)
+		at org.apache.coyote.http11.AbstractHttp11Protocol.init(AbstractHttp11Protocol.java:82)
+		at org.apache.catalina.connector.Connector.initInternal(Connector.java:1049)
+		... 13 more
+	Caused by: java.io.FileNotFoundException: /home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/conf/application.keystore (No such file or directory)
+		at java.base/java.io.FileInputStream.open0(Native Method)
+		at java.base/java.io.FileInputStream.open(FileInputStream.java:219)
+		at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+		at java.base/java.io.FileInputStream.<init>(FileInputStream.java:112)
+		at java.base/sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:86)
+		at java.base/sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:184)
+		at org.apache.catalina.startup.CatalinaBaseConfigurationSource.getResource(CatalinaBaseConfigurationSource.java:121)
+		at org.apache.tomcat.util.net.SSLUtilBase.getStore(SSLUtilBase.java:210)
+		at org.apache.tomcat.util.net.SSLHostConfigCertificate.getCertificateKeystore(SSLHostConfigCertificate.java:254)
+		at org.apache.tomcat.util.net.SSLUtilBase.getKeyManagers(SSLUtilBase.java:308)
+		at org.apache.tomcat.util.net.SSLUtilBase.createSSLContext(SSLUtilBase.java:268)
+		at org.apache.tomcat.util.net.AbstractJsseEndpoint.createSSLContext(AbstractJsseEndpoint.java:112)
+		... 20 more
+20-Jun-2025 11:31:05.327 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["ajp-nio-0.0.0.0-2009"]
+20-Jun-2025 11:31:05.328 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [501] milliseconds
+20-Jun-2025 11:31:05.355 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+20-Jun-2025 11:31:05.355 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/10.1.40]
+20-Jun-2025 11:31:05.359 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/webapps/manager]
+20-Jun-2025 11:31:05.514 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/webapps/manager] has finished in [154] ms
+20-Jun-2025 11:31:05.514 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/webapps/ROOT]
+20-Jun-2025 11:31:05.525 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/home/gourav/VS_Code/Mob-Pipeline-Code/Infra Setup Pipeline/MLOS&GLOS-Infra-Setup/GLOS/Tomcat/apache-tomcat-10.1.40/webapps/ROOT] has finished in [11] ms
+20-Jun-2025 11:31:05.527 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-2020"]
+20-Jun-2025 11:31:05.535 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["ajp-nio-0.0.0.0-2009"]
+20-Jun-2025 11:31:05.536 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [207] milliseconds

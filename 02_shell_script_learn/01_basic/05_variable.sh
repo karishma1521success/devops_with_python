@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+# variables are of two types in shell scripting :   1. user defined variable     2. system defined variables.
 #user defined variables
 name="karishma"  #don't give space around = in shell scripting
 age=21           # $ dollar sign - to use variable in program
@@ -24,7 +26,7 @@ echo $UID        # User ID
 echo $name     # karishma
 echo ${name}   # karishma -- the best way to use variable
 
-echo "My name is $name and age is $age"
+echo "My name is ${name} and age is ${age}"
 echo 'My name is $name and age is $age'  # this will print same message as it is
 # My name is $name and age is $age
 

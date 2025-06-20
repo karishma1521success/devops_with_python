@@ -1,0 +1,7 @@
+127.0.0.1 - - [13/Mar/2025:11:59:12 +0530] "GET / HTTP/1.1" 200 179
+127.0.0.1 - - [13/Mar/2025:11:59:12 +0530] "GET /404.jpg HTTP/1.1" 200 118836
+127.0.0.1 - - [13/Mar/2025:12:37:19 +0530] "GET /manager/html HTTP/1.1" 401 2562
+127.0.0.1 - gourav [13/Mar/2025:12:37:34 +0530] "GET /manager/html HTTP/1.1" 200 11688
+127.0.0.1 - - [13/Mar/2025:12:37:34 +0530] "GET /manager/css/manager.css HTTP/1.1" 200 2946
+127.0.0.1 - - [13/Mar/2025:12:37:34 +0530] "GET /manager/images/asf-logo.svg HTTP/1.1" 200 20712
+127.0.0.1 - - [13/Mar/2025:12:37:34 +0530] "GET /manager/images/tomcat.svg HTTP/1.1" 200 68761

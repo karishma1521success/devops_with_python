@@ -1,0 +1,125 @@
+pipeline {
+    agent any
+
+    parameters {
+        // choice(name: 'DB_OPERATION',
+        //     choices: [
+        //         'BackupScript',
+        //         'PatchScript',
+        //         'RollbackScript',
+        //         'Abort'
+        //     ],
+        // description: 'Run the following')
+
+        // string(name: 'SQL_File_Name', description: 'Enter your SQL file name')
+    }
+
+    environment {
+        //sshCredentials = 'sshpass_10.1.1.46'
+        //deploymentServerIP = '10.1.1.46'
+        //SQL_File_PATH = "/home/gourav/Downloads/SQL_Files/${params.SQL_File_Name}"
+        DB_HOST = 'mobi-con-uat-db-1.ct2a22a40juz.ap-south-1.rds.amazonaws.com'
+        DB_NAME = 'postgres'
+        //DB_CREDS = credentials('Multi-tenent-Conn-UAT-DB')
+    }
+    // CREATE USER increduatuser WITH PASSWORD 'increduatdbpasswd';
+    // CREATE DATABASE increduatdb OWNER increduatuser;
+    // GRANT ALL PRIVILEGES ON DATABASE increduatdb TO increduatuser;
+
+    stages {
+        stage('Execute PostgreSQL Query') {
+            environment {
+                DB_CREDS = credentials('Multi-tenent-Conn-UAT-DB')
+            }
+            steps {
+                script {
+                    switch (params.DB_OPERATION) {
+                        case 'BackupScript':
+                            SQL_File_PATH = "${JENKINS_HOME}/scripts/${params.SQL_File_Name}"
+                            echo "Selected operation: ${params.DB_OPERATION}"
+                            echo "SQL File Path -> ${SQL_File_PATH}"
+
+                            def backupSession = sshExecute("""
+                                export PGPASSWORD="${DB_CREDS_PSW}"
+                                psql --host "${DB_HOST}" --port "5432" --username "${DB_CREDS_USR}" --dbname "${DB_NAME}" --file "${SQL_File_PATH}"
+                            """)
+                            echo "${backupSession}"
+                            break
+
+                        case 'PatchScript':
+                            SQL_File_PATH = "/home/gourav/Downloads/SQL_Files/${params.SQL_File_Name}"
+                            echo "Selected operation: ${params.DB_OPERATION}"
+
+                            def patchSession = sshExecute("""
+                                export PGPASSWORD="${DB_CREDS_PSW}"
+                                psql --host "${DB_HOST}" --port "5432" --username "${DB_CREDS_USR}" --dbname "${DB_NAME}" --file "${SQL_File_PATH}"
+                            """)
+                            echo "${patchSession}"
+                            break
+
+                        case 'RollbackScript':
+                            SQL_File_PATH = "/home/gourav/Downloads/SQL_Files/${params.SQL_File_Name}"
+                            echo "Selected operation: ${params.DB_OPERATION}"
+
+                            def rollbackSession = sshExecute("""
+                                export PGPASSWORD="${DB_CREDS_PSW}"
+                                psql --host "${DB_HOST}" --port "5432" --username "${DB_CREDS_USR}" --dbname "${DB_NAME}" --file "${SQL_File_PATH}"
+                            """)
+                            echo "${rollbackSession}"
+                            break
+
+                        case 'Abort':
+                            echo "Selected operation: ${params.DB_OPERATION}"
+                            error 'Abort operation selected'
+                            break
+
+                        default:
+                            error 'Invalid operation selected'
+
+                    // // Commit session
+                    // def commitSession = sshExecute("""
+                    //     export PGPASSWORD="${DB_CREDS_PSW}"
+                    //     psql --host "${DB_HOST}" --port "5432" --username "${DB_CREDS_USR}" --dbname "${DB_NAME}" -c "COMMIT;"
+                    // """)
+                    // echo "${commitSession}"
+                    }
+                }
+            }
+        }
+    }
+}
+
+def sshExecute(String cmd) {
+    withCredentials([
+        usernamePassword(
+            credentialsId: sshCredentials,
+            usernameVariable: 'SSH_USER',
+            passwordVariable: 'SSH_PASSWORD'
+        )
+        ]
+    ) {
+        def output = sh(
+            script: """
+                sshpass -p "\$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@${deploymentServerIP} <<'EOF'
+                ${cmd}
+EOF
+            """,
+            returnStdout: true
+        ).trim()
+        return output
+    }
+}
+
+/*
+Database IP
+10.16.164.3
+Port
+5432
+Username
+postgres
+Password
+Admin@1234
+postgres
+
+psql -h 10.16.164.3 -d postgres -U postgres -c "\\dt"
+*/

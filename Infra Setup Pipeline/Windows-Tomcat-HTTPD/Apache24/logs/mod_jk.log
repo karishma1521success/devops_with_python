@@ -1,0 +1,47 @@
+[Apr 08 2025 - 22:12:12] [JK_INIT] [29428:31520] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:12:12] [JK_INIT] [29428:31520] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:12:13] [JK_INIT] [26604:15688] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:12:13] [JK_INIT] [26604:15688] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:28] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:28] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:28] [JK_INIT] [24656:9708] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:28] [JK_INIT] [24656:9708] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:44] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:44] [JK_INIT] [29712:32040] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:13:44] [JK_INIT] [29712:32040] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:19:23] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:19:23] [JK_INIT] [30892:31368] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:19:23] [JK_INIT] [30892:31368] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:20:41] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:20:41] [JK_INIT] [3588:11492] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:20:41] [JK_INIT] [3588:11492] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:20:44] kotak_balancer 127.0.0.1 0.003512
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.001554
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.000000
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.000523
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.001004
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.000999
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.000314
+[Apr 08 2025 - 22:20:45] kotak_balancer 127.0.0.1 0.001005
+[Apr 08 2025 - 22:20:46] kotak_balancer 127.0.0.1 0.001030
+[Apr 08 2025 - 22:20:46] kotak_balancer 127.0.0.1 0.001001
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.000000
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.000534
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.000999
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.001000
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.001018
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.001000
+[Apr 08 2025 - 22:20:47] kotak_balancer 127.0.0.1 0.001612
+[Apr 08 2025 - 22:20:48] kotak_balancer 127.0.0.1 0.001002
+[Apr 08 2025 - 22:21:36] [JK_INIT] [24812:30580] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:21:37] [JK_INIT] [9356:23968] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:21:37] [JK_INIT] [9356:23968] [info] init_jk::mod_jk.c (3640): mod_jk/1.2.50 initialized
+[Apr 08 2025 - 22:21:39] kotak_balancer 127.0.0.1 0.002507
+[Apr 08 2025 - 22:21:39] kotak_balancer 127.0.0.1 0.003323
+[Apr 08 2025 - 22:21:40] kotak_balancer 127.0.0.1 0.001505
+[Apr 08 2025 - 22:21:40] kotak_balancer 127.0.0.1 0.001000
+[Apr 08 2025 - 22:21:48] kotak_balancer 127.0.0.1 0.722004
+[Apr 08 2025 - 22:21:54] kotak_balancer 127.0.0.1 0.024657
+[Apr 08 2025 - 22:21:54] kotak_balancer 127.0.0.1 0.014003
+[Apr 08 2025 - 22:21:54] kotak_balancer 127.0.0.1 0.011608
+[Apr 08 2025 - 22:21:54] kotak_balancer 127.0.0.1 0.015111

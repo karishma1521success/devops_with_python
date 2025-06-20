@@ -1,0 +1,1 @@
+{"id":"091ae3bb-8da6-fb7f-ed7a-306e644fd4fb","templateTableBands":[{"id":"5927c052-92d9-528a-b258-720c81c83a60","bandName":"apacCardNumber","position":0,"columns":[{"id":"6ecbb423-df72-9654-a054-f21fdb40ddf8","key":"apac_card_number","caption":"LAN","position":0},{"id":"57284584-e463-f2f2-168f-833e6eff10f3","key":"communication_type","caption":"CHANNEL","position":1}]}]}

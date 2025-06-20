@@ -1,0 +1,2 @@
+LAN,Campaign,Recipient,Customer Name,Transaction Id,Delivery Status,Mode of Communication,Date of Communication
+${apac_card_number},${iteration},${recipient},${party_name},${trans_unique_id},${comm_status},${communication_type},${created_date}

@@ -1,0 +1,8 @@
+127.0.0.1 - - [20/Jun/2025:11:31:23 +0530] "GET / HTTP/1.1" 200 179
+127.0.0.1 - - [20/Jun/2025:11:31:23 +0530] "GET /404.jpg HTTP/1.1" 200 118836
+127.0.0.1 - - [20/Jun/2025:11:31:23 +0530] "GET /favicon.ico HTTP/1.1" 200 21630
+127.0.0.1 - - [20/Jun/2025:11:31:28 +0530] "GET /manager/html HTTP/1.1" 401 2562
+127.0.0.1 - KotakGLOS [20/Jun/2025:11:31:40 +0530] "GET /manager/html HTTP/1.1" 200 11689
+127.0.0.1 - - [20/Jun/2025:11:31:40 +0530] "GET /manager/images/asf-logo.svg HTTP/1.1" 200 20712
+127.0.0.1 - - [20/Jun/2025:11:31:40 +0530] "GET /manager/images/tomcat.svg HTTP/1.1" 200 68761
+127.0.0.1 - - [20/Jun/2025:11:31:40 +0530] "GET /manager/css/manager.css HTTP/1.1" 200 2946
