@@ -1,5 +1,7 @@
 #!/bin/bash
-
+ # There should not be any space around the “=” sign in the variable assignment.
+ # VariableName=value
+#  When you use VariableName = value, the shell assumes that [VariableName is the name of a command and tries to execute it.}
 
 # variables are of two types in shell scripting :   1. user defined variable     2. system defined variables.
 #user defined variables
