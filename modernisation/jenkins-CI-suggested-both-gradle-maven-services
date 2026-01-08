@@ -1,0 +1,159 @@
+pipeline {
+    agent any
+
+    environment {
+
+        /* ================= GIT ================= */
+        GIT_BRANCH = 'main'
+
+        /* ================= AWS / ECR ================= */
+        AWS_REGION     = 'ap-south-1'
+        AWS_ACCOUNT_ID = '123456789012'   //123362706831 
+        ECR_REPO       = 'communication-gateway/whatsapp-prutech'    //mobicule-prod-whatsapp-prutech-ecr
+        IMAGE_NAME     = 'whatsapp-prutech'  //digitalmcollect/whatsapp-prutech
+        IMAGE_TAG      = "${BUILD_NUMBER}-${GIT_COMMIT.take(7)}"
+
+        /* ================= SONAR ================= */
+        SONAR_PROJECT_KEY = 'whatsapp-prutech'
+        SONAR_SERVER      = 'sonar-server'
+    }
+
+    stages {
+
+        /* =================================================
+           1. CHECKOUT SOURCE
+           ================================================= */
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        /* =================================================
+           2. SONARQUBE ANALYSIS (AUTO-DETECT MAVEN / GRADLE)
+           ================================================= */
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONAR_SERVER}") {
+                    sh '''
+                        set -e
+
+                        if [ -f gradlew ]; then
+                            echo "Gradle project detected for Sonar"
+                            chmod +x gradlew
+                            ./gradlew sonar \
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+                        elif [ -f mvnw ]; then
+                            echo "Maven Wrapper project detected for Sonar"
+                            chmod +x mvnw
+                            ./mvnw sonar:sonar \
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+                        elif [ -f pom.xml ]; then
+                            echo "Maven project detected for Sonar"
+                            mvn sonar:sonar \
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+                        else
+                            echo "No supported build tool found for Sonar"
+                            exit 1
+                        fi
+                    '''
+                }
+            }
+        }
+
+        /* =================================================
+           3. SONAR QUALITY GATE (BLOCKER)
+           ================================================= */
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        /* =================================================
+           4. DOCKER BUILD (BUILD LOGIC INSIDE DOCKERFILE)
+           ================================================= */
+        stage('Docker Build') {
+            steps {
+                sh """
+                    docker build \
+                      -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                """
+            }
+        }
+
+        /* =================================================
+           5. MANUAL PRODUCTION APPROVAL
+           ================================================= */
+        stage('Production Approval') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    input message: 'Approve Docker image push to PRODUCTION?',
+                          ok: 'Approve',
+                          submitter: 'prod-approvers'
+                }
+            }
+        }
+
+        /* =================================================
+           6. LOGIN TO AWS ECR
+           ================================================= */
+        stage('Login to AWS ECR') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-ecr-cred'
+                ]]) {
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} \
+                        | docker login \
+                          --username AWS \
+                          --password-stdin \
+                          ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    """
+                }
+            }
+        }
+
+        /* =================================================
+           7. TAG IMAGE
+           ================================================= */
+        stage('Tag Image') {
+            steps {
+                sh """
+                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+                """
+            }
+        }
+
+        /* =================================================
+           8. PUSH IMAGE TO AWS ECR
+           ================================================= */
+        stage('Push Image to ECR') {
+            steps {
+                sh """
+                    docker push \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ CI SUCCESS | Image pushed to ECR with tag: ${IMAGE_TAG}"
+        }
+        failure {
+            echo "❌ CI FAILED | Investigate immediately"
+        }
+        aborted {
+            echo "⏸ PIPELINE ABORTED | Production approval not granted"
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

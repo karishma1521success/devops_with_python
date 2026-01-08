@@ -1,0 +1,137 @@
+pipeline {
+    agent any
+
+    environment {
+        SONAR_URL  = "http://10.0.2.27:9000"
+        SONAR_USER = "admin"
+        SONAR_PASS = "mobicule"
+
+        TOKEN_FILE = "/var/lib/jenkins/sonarqube/tokens/sonarqube_project_tokens.csv"
+    }
+
+    stages {
+
+        stage('Create SonarQube Projects & Tokens') {
+            steps {
+                script {
+
+                    def PROJECTS = [
+                        [name: "lendingkart-uat-mcollect-core-jar",        key: "lendingkart-uat-core",        tag: "lendingkart-core-uat"],
+                        [name: "lendingkart-uat-mcollect-core-integration", key: "lendingkart-uat-integration",       tag: "lendingkart-core-uat"],
+                        [name: "lendingkart-uat-mcollect-core-schedular",       key: "lendingkart-uat-schedular",        tag: "lendingkart-core-uat"],
+                        [name: "lendingkart-uat-mcollect-core-web",       key: "lendingkart-uat-core-web",        tag: "lendingkart-core-uat"],
+                        [name: "lendingkart-uat-mcollect-core-web-adfs",       key: "lendingkart-uat-core-web-adfs",        tag: "lendingkart-core-uat"],
+                        [name: "lendingkart-uat-mcollect-digital-collection-consumer",        key: "lendingkart-uat-consumer",        tag: "lendingkart-digital-uat"],
+                        [name: "lendingkart-uat-mcollect-digital-collection-dashboard", key: "lendingkart-uat-dashboard",       tag: "lendingkart-digital-uat"],
+                        [name: "lendingkart-uat-mcollect-digital-collection-shortener",       key: "lendingkart-uat-shortener",        tag: "lendingkart-digital-uat"],
+                        [name: "lendingkart-uat-mcollect-digital-collection-web",       key: "lendingkart-uat-web",        tag: "lendingkart-digital-uat"],
+                        [name: "lendingkart-uat-mcollect-digital-collection-webhook",       key: "lendingkart-uat-webhook",        tag: "lendingkart-digital-uat"]
+                    ]
+
+                    sh """
+                    mkdir -p \$(dirname ${TOKEN_FILE})
+                    if [ ! -f ${TOKEN_FILE} ]; then
+                        echo "Project Name,Project Key,Token" > ${TOKEN_FILE}
+                    fi
+                    """
+
+                    PROJECTS.each { project ->
+
+                        echo "▶ Processing project: ${project.key}"
+
+                        /* ---------------- Project check/create ---------------- */
+                        def projectExists = sh(
+                            script: """
+                            curl -s -u ${SONAR_USER}:${SONAR_PASS} \
+                            "${SONAR_URL}/api/projects/search?projects=${project.key}" | \
+                            jq '.components | length'
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        if (projectExists == "0") {
+                            sh """
+                            curl -s -f -u ${SONAR_USER}:${SONAR_PASS} \
+                              -X POST "${SONAR_URL}/api/projects/create" \
+                              -d "name=${project.name}" \
+                              -d "project=${project.key}" \
+                              -d "visibility=public"
+                            """
+                            echo "✅ Project created: ${project.key}"
+                        } else {
+                            echo "ℹ Project already exists: ${project.key}"
+                        }
+
+                        /* ---------------- Token check/create ---------------- */
+                        def tokenName = "${project.key}-token"
+
+                        def existingToken = sh(
+                            script: """
+                            curl -s -u ${SONAR_USER}:${SONAR_PASS} \
+                            "${SONAR_URL}/api/user_tokens/search" | \
+                            jq -r '.tokens // [] | .[] | select(.name=="${tokenName}") | .token'
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        def projectToken = ""
+
+                        if (existingToken) {
+                            projectToken = existingToken
+                            echo "🔁 Reusing existing token for ${project.key}"
+                        } else {
+                            def tokenResponse = sh(
+                                script: """
+                                curl -s -u ${SONAR_USER}:${SONAR_PASS} \
+                                -X POST "${SONAR_URL}/api/user_tokens/generate" \
+                                -d "name=${tokenName}" \
+                                -d "projectKey=${project.key}"
+                                """,
+                                returnStdout: true
+                            ).trim()
+
+                            projectToken = sh(
+                                script: "echo '${tokenResponse}' | jq -r '.token'",
+                                returnStdout: true
+                            ).trim()
+
+                            if (!projectToken || projectToken == "null") {
+                                error "❌ Token generation failed for ${project.key}"
+                            }
+
+                            echo "🔐 Token generated for ${project.key}"
+                        }
+
+                        /* ---------------- Save token permanently ---------------- */
+                        sh """
+                        grep -q "^${project.name},${project.key}," ${TOKEN_FILE} || \
+                        echo "${project.name},${project.key},${projectToken}" >> ${TOKEN_FILE}
+                        """
+
+                        /* ---------------- Add tags ---------------- */
+                        sh """
+                        curl -s -u ${SONAR_USER}:${SONAR_PASS} \
+                          -X POST "${SONAR_URL}/api/project_tags/set" \
+                          -d "project=${project.key}" \
+                          -d "tags=${project.tag}"
+                        """
+
+                        echo "🏷 Tag added for ${project.key}"
+                        echo "🔑 TOKEN (${project.key}): ${projectToken}"
+                        echo "--------------------------------------------------"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ All SonarQube projects processed successfully"
+            echo "📁 Tokens stored at: ${TOKEN_FILE}"
+        }
+        failure {
+            echo "❌ SonarQube multi-project pipeline failed"
+        }
+    }
+}

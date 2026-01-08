@@ -1,5 +1,9 @@
 https://medium.com/@techsuneel99/docker-from-beginner-to-expert-a-comprehensive-tutorial-5efec10c82ab
 
+https://medium.com/@techsuneel99/docker-from-beginner-to-expert-a-comprehensive-tutorial-5efec10c82ab
+
+https://harsh05.medium.com/mastering-docker-a-guide-to-common-practical-challenges-5275c1dbfe3b
+
 Docker - 
 1. It is an open source containerization platform that enables developers to build , deploy , run , update and manage containerized applications
 2.  docker implements containerization

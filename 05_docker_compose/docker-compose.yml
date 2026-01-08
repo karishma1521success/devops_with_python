@@ -1,0 +1,32 @@
+version: '3.8' # Specify the Docker Compose file format version
+
+services:
+  # Application Tier (Tomcat)
+  frontend:
+    image: httpd:latest
+    container_name: apachehttpd
+    volumes:
+      - "./frontend:/usr/local/apache2/htdocs"
+    ports:
+      - 80:80
+  app:
+    build:
+      context: ./apptier/ # Build the image from the current directory (where Dockerfile is located)
+      dockerfile: Dockerfile # Specify the Dockerfile name
+    # If you don't have a Dockerfile, you can use a pre-built image:
+    # image: tomcat:9-jdk17-temurin-jammy
+    container_name: my-tomcat-app
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+    volumes: 
+      # Optional: Mount a local directory to the webapps directory for hot-reloading during development
+      - ./apptier/webapps:/usr/local/tomcat/webapps/
+      # Or, if you prefer to mount a directory of expanded webapps:
+      # - ./tomcat-config/conf:/usr/local/tomcat/conf
+    environment:
+      # Example: Pass environment variables to your Tomcat application
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: mydatabase
+      DB_USER: myuser
+      DB_PASSWORD: mypassword

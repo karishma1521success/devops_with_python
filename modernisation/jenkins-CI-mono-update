@@ -1,0 +1,135 @@
+pipeline {
+  agent any
+
+  environment {
+    /* ================= AWS / ECR ================= */
+    AWS_REGION     = 'ap-south-1'
+    ECR_ACCOUNT_ID = '123456789012'
+    ECR_REPO       = 'communication-gateway/whatsapp-prutech'
+    IMAGE_TAG      = "${BUILD_NUMBER}"
+
+    /* ================= SONAR ================= */
+    SONAR_HOST_URL   = 'http://127.0.0.1:9000'
+    SONAR_PROJECT_KEY = 'whatsapp-prutech'
+    SONAR_TOKEN      = credentials('sonar-token')
+  }
+
+  stages {
+
+    /* =================================================
+       1. CHECKOUT SOURCE
+       ================================================= */
+    stage('Checkout Code') {
+      steps {
+        checkout scm
+      }
+    }
+
+    /* =================================================
+       2. SONARQUBE ANALYSIS (DOCKER BASED)
+       ================================================= */
+    stage('SonarQube Analysis') {
+      steps {
+        sh """
+          docker run --rm \
+            -v \$PWD:/app \
+            -w /app \
+            eclipse-temurin:21-jdk-alpine \
+            sh -c '
+              chmod +x gradlew &&
+              ./gradlew sonar \
+              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+              -Dsonar.host.url=${SONAR_HOST_URL} \
+              -Dsonar.token=${SONAR_TOKEN}
+            '
+        """
+      }
+    }
+
+    /* =================================================
+       3. QUALITY GATE (PROD BLOCKER)
+       ================================================= */
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 5, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+    /* =================================================
+       4. DOCKER BUILD (WAR CREATED INSIDE)
+       ================================================= */
+    stage('Docker Build') {
+      steps {
+        sh """
+          docker build \
+            -t whatsapp-prutech:${IMAGE_TAG} .
+        """
+      }
+    }
+
+    /* =================================================
+       5. MANUAL PROD APPROVAL (AUDIT)
+       ================================================= */
+    stage('Production Approval') {
+      steps {
+        input message: 'Approve build for PRODUCTION?',
+              ok: 'Approve',
+              submitter: 'prod-approvers'
+      }
+    }
+
+    /* =================================================
+       6. LOGIN TO AWS ECR
+       ================================================= */
+    stage('Login to ECR') {
+      steps {
+        sh """
+          aws ecr get-login-password \
+            --region ${AWS_REGION} \
+          | docker login \
+            --username AWS \
+            --password-stdin \
+            ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+        """
+      }
+    }
+
+    /* =================================================
+       7. TAG IMAGE
+       ================================================= */
+    stage('Tag Image') {
+      steps {
+        sh """
+          docker tag whatsapp-prutech:${IMAGE_TAG} \
+          ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+        """
+      }
+    }
+
+    /* =================================================
+       8. PUSH IMAGE TO ECR
+       ================================================= */
+    stage('Push Image to ECR') {
+      steps {
+        sh """
+          docker push \
+          ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+        """
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Production CI successful. Image pushed to ECR."
+    }
+    failure {
+      echo "❌ CI failed. Production blocked."
+    }
+    aborted {
+      echo "⏸ Pipeline aborted during approval."
+    }
+  }
+}
