@@ -1,0 +1,44 @@
+import jenkins.model.*
+
+def dryRun = true // Set to false to actually delete the jobs
+def matchedJobs = Jenkins.instance.items.findAll { job ->
+    // This regex will match all jobs. You can modify it to filter if needed.
+    job.name =~ /.*/ 
+}
+
+println "Found " + matchedJobs.size() + " jobs to process."
+
+matchedJobs.each { job ->
+    if (dryRun) {
+        println "Dry run: " + job.name + " would be deleted."
+    } else {
+        println "Deleting job: " + job.name
+        job.delete()
+    }
+}
+
+if (!dryRun) {
+    println "Deletion process finished. Reloading configuration from disk."
+    Jenkins.instance.reload()
+} else {
+    println "Dry run complete. No jobs were deleted."
+}
+
+
+
+
+
+// To delete all Jenkins pipelines (jobs) at once, the most effective and recommended method is using a Groovy script in the Jenkins Script Console. 
+// ⚠️ Warning: Running a script in the Script Console gives you administrative access and can make permanent, unrecoverable changes to your Jenkins instance. It is highly recommended to take a full backup of your Jenkins data before proceeding. 
+// Using the Jenkins Script Console
+// Navigate to Manage Jenkins on your Jenkins dashboard.
+// Click on Script Console under the Tools and Actions section (the direct URL is JENKINS_URL/script).
+// Paste the following Groovy script into the text area:
+// Test with dryRun = true first:
+// Initially, run the script with def dryRun = true to list all the jobs that would be deleted without actually deleting them. This confirms you are targeting the correct jobs.
+// Click the Run button.
+// Perform the deletion:
+// If the output of the dry run is correct, change the line to def dryRun = false.
+// Click the Run button again to permanently delete the jobs.
+// The script includes Jenkins.instance.reload() to refresh the UI immediately after deletion. 
+// This approach is safer and more efficient than manually deleting jobs one by one or directly manipulating the file system. 

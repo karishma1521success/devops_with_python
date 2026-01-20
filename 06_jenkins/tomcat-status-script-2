@@ -1,0 +1,156 @@
+pipeline {
+    agent any
+
+    environment {
+        TARGET_HOST    = "10.0.2.102"
+        CSV_REPORT     = "tomcat_server_utilization.csv"
+        HTML_REPORT    = "tomcat_server_utilization.html"
+        EXCEL_REPORT   = "tomcat_server_utilization.xlsx"
+        EMAIL_TO       = "karishma.gupta@mobicule.com"
+        SSH_CREDENTIAL = "SSH_UAT_CM_NP2P_App1"
+    }
+
+    stages {
+
+        stage('Collect Tomcat & Server Metrics') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${SSH_CREDENTIAL}",
+                        usernameVariable: 'SSH_USER',
+                        passwordVariable: 'SSH_PASS'
+                    )
+                ]) {
+                    sh """
+                    sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no $SSH_USER@${TARGET_HOST} 'bash -s' <<'EOF'
+
+                    CSV="/tmp/${CSV_REPORT}"
+                    HTML="/tmp/${HTML_REPORT}"
+
+                    SERVER_CPU=\$(top -bn1 | awk '/Cpu/ {printf "%.2f", 100 - \$8}')
+                    SERVER_MEM=\$(free | awk '/Mem/ {printf "%.2f", \$3/\$2 * 100}')
+                    SERVER_DISK=\$(df -h / | awk 'NR==2 {print \$5}')
+
+                    echo "Server,Tomcat_Path,PID,Start_Time,CPU(%),Memory(%),Tomcat_Disk_Usage" > \$CSV
+
+                    ps -eo pid,lstart,cmd,%cpu,%mem | grep 'org.apache.catalina.startup.Bootstrap' | grep -v grep | while read pid d1 d2 d3 d4 time year cmd cpu mem
+                    do
+                        CATALINA_BASE=\$(echo "\$cmd" | sed -n 's/.*-Dcatalina.base=\\([^ ]*\\).*/\\1/p')
+                        [ -z "\$CATALINA_BASE" ] && CATALINA_BASE="UNKNOWN"
+
+                        DISK=\$(du -sh \$CATALINA_BASE 2>/dev/null | awk '{print \$1}')
+                        [ -z "\$DISK" ] && DISK="N/A"
+
+                        START="\$d1 \$d2 \$d3 \$d4 \$time \$year"
+
+                        echo "${TARGET_HOST},\$CATALINA_BASE,\$pid,\$START,\$cpu,\$mem,\$DISK" >> \$CSV
+                    done
+
+                    # -------- HTML --------
+                    cat <<HTML > \$HTML
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial; }
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #ccc; padding: 8px; }
+                            th { background: #2f4f4f; color: white; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Tomcat & Server Utilization Report</h2>
+                        <b>Server:</b> ${TARGET_HOST}<br>
+                        <b>CPU:</b> \$SERVER_CPU %<br>
+                        <b>Memory:</b> \$SERVER_MEM %<br>
+                        <b>Disk:</b> \$SERVER_DISK<br><br>
+
+                        <table>
+                            <tr>
+                                <th>Tomcat Path</th>
+                                <th>PID</th>
+                                <th>Start Time</th>
+                                <th>CPU (%)</th>
+                                <th>Memory (%)</th>
+                                <th>Disk Usage</th>
+                            </tr>
+                    HTML
+
+                    tail -n +2 \$CSV | while IFS=',' read -r server path pid start1 start2 start3 start4 start5 start6 cpu mem disk
+                    do
+                        start_time="\$start1 \$start2 \$start3 \$start4 \$start5 \$start6"
+                        echo "<tr><td>\$path</td><td>\$pid</td><td>\$start_time</td><td>\$cpu</td><td>\$mem</td><td>\$disk</td></tr>" >> \$HTML
+                    done
+
+                    echo "</table></body></html>" >> \$HTML
+
+                    # Clean remote temp files after copying
+                    # scp will fetch them in the next stage
+                    EOF
+                    """
+                }
+            }
+        }
+
+        stage('Fetch Reports') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${SSH_CREDENTIAL}",
+                        usernameVariable: 'SSH_USER',
+                        passwordVariable: 'SSH_PASS'
+                    )
+                ]) {
+                    sh """
+                    sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no \
+                        $SSH_USER@${TARGET_HOST}:/tmp/${CSV_REPORT} .
+                    sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no \
+                        $SSH_USER@${TARGET_HOST}:/tmp/${HTML_REPORT} .
+                    """
+                }
+            }
+        }
+
+        stage('Generate Excel Report') {
+            steps {
+                sh """
+                python3 << 'EOF'
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import Font
+
+df = pd.read_csv("${CSV_REPORT}")
+df.to_excel("${EXCEL_REPORT}", index=False)
+
+wb = load_workbook("${EXCEL_REPORT}")
+ws = wb.active
+
+# Bold header
+for c in ws[1]:
+    c.font = Font(bold=True)
+
+# Adjust column widths
+for col in ws.columns:
+    max_len = max(len(str(c.value)) for c in col)
+    ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 50)
+
+wb.save("${EXCEL_REPORT}")
+EOF
+                """
+            }
+        }
+
+        stage('Archive & Email') {
+            steps {
+                archiveArtifacts artifacts: "${HTML_REPORT}, ${EXCEL_REPORT}", fingerprint: true
+
+                emailext(
+                    to: "${EMAIL_TO}",
+                    subject: "Tomcat Utilization Report – ${TARGET_HOST}",
+                    mimeType: 'text/html',
+                    body: "Please find attached the Tomcat & Server utilization report.",
+                    attachmentsPattern: "${HTML_REPORT}, ${EXCEL_REPORT}"
+                )
+            }
+        }
+    }
+}

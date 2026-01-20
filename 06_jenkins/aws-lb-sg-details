@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        REPORT_DIR = 'lb-security-report'
+        CSV_FILE  = 'lb-security-rules.csv'
+    }
+
+    stages {
+
+        stage('Prepare Workspace') {
+            steps {
+                sh '''
+                  rm -rf ${REPORT_DIR}
+                  mkdir -p ${REPORT_DIR}
+                '''
+            }
+        }
+
+        stage('Fetch Load Balancers') {
+            steps {
+                sh '''
+                  aws elbv2 describe-load-balancers \
+                    --output json > ${REPORT_DIR}/loadbalancers.json
+                '''
+            }
+        }
+
+        stage('Fetch Security Groups & Rules') {
+            steps {
+                sh '''
+                  echo "[" > ${REPORT_DIR}/lb-sg-rules.json
+                  first=true
+
+                  for lb_arn in $(jq -r '.LoadBalancers[].LoadBalancerArn' ${REPORT_DIR}/loadbalancers.json); do
+
+                    lb_name=$(jq -r --arg ARN "$lb_arn" \
+                      '.LoadBalancers[] | select(.LoadBalancerArn==$ARN) | .LoadBalancerName' \
+                      ${REPORT_DIR}/loadbalancers.json)
+
+                    sg_ids=$(jq -r --arg ARN "$lb_arn" \
+                      '.LoadBalancers[] | select(.LoadBalancerArn==$ARN) | .SecurityGroups[]?' \
+                      ${REPORT_DIR}/loadbalancers.json)
+
+                    for sg in $sg_ids; do
+                      if [ "$first" = false ]; then
+                        echo "," >> ${REPORT_DIR}/lb-sg-rules.json
+                      fi
+                      first=false
+
+                      aws ec2 describe-security-groups \
+                        --group-ids $sg \
+                        --output json | jq --arg LB "$lb_name" '
+                          .SecurityGroups[] | {
+                            LoadBalancer: $LB,
+                            SecurityGroupId: .GroupId,
+                            SecurityGroupName: .GroupName,
+                            InboundRules: .IpPermissions,
+                            OutboundRules: .IpPermissionsEgress
+                          }' >> ${REPORT_DIR}/lb-sg-rules.json
+                    done
+                  done
+
+                  echo "]" >> ${REPORT_DIR}/lb-sg-rules.json
+                '''
+            }
+        }
+
+        stage('Generate CSV for Google Sheets') {
+            steps {
+                sh '''
+                  echo "LoadBalancer,SecurityGroupId,Direction,Protocol,FromPort,ToPort,CIDR" \
+                    > ${REPORT_DIR}/${CSV_FILE}
+
+                  jq -r '
+                    .[] as $entry |
+                    (
+                      $entry.InboundRules[]? |
+                      .IpRanges[]? |
+                      [
+                        $entry.LoadBalancer,
+                        $entry.SecurityGroupId,
+                        "Inbound",
+                        (.IpProtocol // "all"),
+                        (.FromPort // "all"),
+                        (.ToPort // "all"),
+                        .CidrIp
+                      ]
+                    ),
+                    (
+                      $entry.OutboundRules[]? |
+                      .IpRanges[]? |
+                      [
+                        $entry.LoadBalancer,
+                        $entry.SecurityGroupId,
+                        "Outbound",
+                        (.IpProtocol // "all"),
+                        (.FromPort // "all"),
+                        (.ToPort // "all"),
+                        .CidrIp
+                      ]
+                    )
+                    | @csv
+                  ' ${REPORT_DIR}/lb-sg-rules.json >> ${REPORT_DIR}/${CSV_FILE}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: "${REPORT_DIR}/*.{json,csv}", fingerprint: true
+        }
+        always {
+            echo "Load Balancer security audit completed"
+        }
+    }
+}

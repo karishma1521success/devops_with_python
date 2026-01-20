@@ -1,0 +1,134 @@
+pipeline {
+    agent any
+
+    environment {
+        TARGET_HOST = "10.0.2.101"
+        SSH_USER    = "ec2-user"
+        SSH_KEY     = "prod-linux-ssh"
+
+        CSV_REPORT  = "tomcat_server_utilization.csv"
+        HTML_REPORT = "tomcat_server_utilization.html"
+
+        EMAIL_TO    = "karishma.gupta@mobicule.com"
+    }
+
+    stages {
+
+        stage('Collect Tomcat & Server Metrics') {
+            steps {
+                sshagent(credentials: [env.SSH_KEY]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${SSH_USER}@${TARGET_HOST} 'bash -s' << 'EOF'
+
+                    CSV="/tmp/${CSV_REPORT}"
+                    HTML="/tmp/${HTML_REPORT}"
+
+                    SERVER_CPU=\$(top -bn1 | awk '/Cpu/ {printf "%.2f", 100 - \$8}')
+                    SERVER_MEM=\$(free | awk '/Mem/ {printf "%.2f", \$3/\$2 * 100}')
+                    SERVER_DISK=\$(df -h / | awk 'NR==2 {print \$5}')
+
+                    echo "Server,Tomcat_Path,PID,Start_Time,CPU(%),Memory(%),Tomcat_Disk_Usage" > \$CSV
+
+                    ps -eo pid,lstart,cmd,%cpu,%mem | grep 'org.apache.catalina.startup.Bootstrap' | grep -v grep | while read pid d1 d2 d3 d4 time year cmd cpu mem
+                    do
+                        CATALINA_BASE=\$(echo "\$cmd" | sed -n 's/.*-Dcatalina.base=\\([^ ]*\\).*/\\1/p')
+                        [ -z "\$CATALINA_BASE" ] && CATALINA_BASE="UNKNOWN"
+
+                        DISK=\$(du -sh \$CATALINA_BASE 2>/dev/null | awk '{print \$1}')
+                        [ -z "\$DISK" ] && DISK="N/A"
+
+                        START="\$d1 \$d2 \$d3 \$d4 \$time \$year"
+
+                        echo "${TARGET_HOST},\$CATALINA_BASE,\$pid,\$START,\$cpu,\$mem,\$DISK" >> \$CSV
+                    done
+
+                    # ------------------ HTML REPORT ------------------
+                    cat <<HTML > \$HTML
+                    <html>
+                    <head>
+                        <title>Tomcat Utilization Report</title>
+                        <style>
+                            body { font-family: Arial; }
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #ccc; padding: 8px; }
+                            th { background-color: #2f4f4f; color: white; }
+                            .summary { margin-bottom: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Tomcat & Server Utilization Report</h2>
+
+                        <div class="summary">
+                            <b>Server:</b> ${TARGET_HOST}<br>
+                            <b>Server CPU:</b> \$SERVER_CPU %<br>
+                            <b>Server Memory:</b> \$SERVER_MEM %<br>
+                            <b>Server Disk:</b> \$SERVER_DISK
+                        </div>
+
+                        <table>
+                            <tr>
+                                <th>Tomcat Path</th>
+                                <th>PID</th>
+                                <th>Start Time</th>
+                                <th>CPU (%)</th>
+                                <th>Memory (%)</th>
+                                <th>Disk Usage</th>
+                            </tr>
+                    HTML
+
+                    tail -n +2 \$CSV | while IFS=',' read server path pid start cpu mem disk
+                    do
+                        echo "<tr><td>\$path</td><td>\$pid</td><td>\$start</td><td>\$cpu</td><td>\$mem</td><td>\$disk</td></tr>" >> \$HTML
+                    done
+
+                    echo "</table></body></html>" >> \$HTML
+                    EOF
+                    """
+                }
+            }
+        }
+
+        stage('Fetch Reports') {
+            steps {
+                sshagent(credentials: [env.SSH_KEY]) {
+                    sh """
+                    scp -o StrictHostKeyChecking=no ${SSH_USER}@${TARGET_HOST}:/tmp/${CSV_REPORT} .
+                    scp -o StrictHostKeyChecking=no ${SSH_USER}@${TARGET_HOST}:/tmp/${HTML_REPORT} .
+                    """
+                }
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: "${CSV_REPORT}, ${HTML_REPORT}", fingerprint: true
+            }
+        }
+
+        stage('Email Report to Manager') {
+            steps {
+                emailext(
+                    to: "${EMAIL_TO}",
+                    subject: "Tomcat & Server Utilization Report – ${TARGET_HOST}",
+                    mimeType: 'text/html',
+                    body: """
+                    Hello Team,<br><br>
+
+                    Please find attached the <b>Tomcat & Server Utilization Report</b> for server <b>${TARGET_HOST}</b>.<br><br>
+
+                    <b>Included:</b>
+                    <ul>
+                        <li>Per-Tomcat CPU, Memory & Disk usage</li>
+                        <li>Server-level CPU, Memory & Disk utilization</li>
+                        <li>Tomcat paths and uptime details</li>
+                    </ul>
+
+                    Regards,<br>
+                    Jenkins Automation
+                    """,
+                    attachmentsPattern: "${CSV_REPORT}, ${HTML_REPORT}"
+                )
+            }
+        }
+    }
+}

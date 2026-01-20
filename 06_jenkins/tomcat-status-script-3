@@ -1,0 +1,176 @@
+pipeline {
+    agent any
+
+    environment {
+        // List of servers and credentials in parallel arrays
+        // SERVERS = "10.0.2.102,10.0.2.103,10.0.2.104" // comma-separated
+        // CREDENTIALS = "SSH_UAT_CM_NP2P_App1,SSH_UAT_CM_NP2P_App2,SSH_UAT_CM_NP2P_App3"
+        SERVERS = "10.0.2.102" // comma-separated
+        CREDENTIALS = "SSH_UAT_CM_NP2P_App1"
+
+        CSV_REPORT  = "tomcat_server_utilization.csv"
+        HTML_REPORT = "tomcat_server_utilization.html"
+        EXCEL_REPORT = "tomcat_server_utilization.xlsx"
+
+        EMAIL_TO = "karishma.gupta@mobicule.com"
+    }
+
+    stages {
+
+        stage('Collect Tomcat & Server Metrics') {
+            steps {
+                script {
+                    // Split server and credential lists
+                    def serversList = SERVERS.split(',')
+                    def credsList   = CREDENTIALS.split(',')
+
+                    // Initialize consolidated CSV on Jenkins
+                    sh "echo 'Server,Tomcat_Path,PID,Start_Time,CPU(%),Memory(%),Tomcat_Disk_Usage' > ${CSV_REPORT}"
+
+                    // Loop over servers
+                    for (int i = 0; i < serversList.size(); i++) {
+                        def serverIP = serversList[i].trim()
+                        def credID   = credsList[i].trim()
+
+                        // Bash commands to run remotely
+                        def cmd = '''
+CSV="/tmp/${CSV_REPORT}"
+HTML="/tmp/${HTML_REPORT}"
+
+SERVER_CPU=$(top -bn1 | awk '/Cpu/ {printf "%.2f", 100 - $8}')
+SERVER_MEM=$(free | awk '/Mem/ {printf "%.2f", $3/$2 * 100}')
+SERVER_DISK=$(df -h / | awk 'NR==2 {print $5}')
+
+TMP_CSV="/tmp/tomcat_tmp.csv"
+echo "Server,Tomcat_Path,PID,Start_Time,CPU(%),Memory(%),Tomcat_Disk_Usage" > $TMP_CSV
+
+ps -eo pid,lstart,cmd,%cpu,%mem | grep "org.apache.catalina.startup.Bootstrap" | grep -v grep | while read pid d1 d2 d3 d4 time year cmd cpu mem
+do
+    CATALINA_BASE=$(echo "$cmd" | sed -n 's/.*-Dcatalina.base=\\([^ ]*\\).*/\\1/p')
+    [ -z "$CATALINA_BASE" ] && CATALINA_BASE="UNKNOWN"
+    DISK=$(du -sh "$CATALINA_BASE" 2>/dev/null | awk "{print \$1}")
+    [ -z "$DISK" ] && DISK="N/A"
+    START="$d1 $d2 $d3 $d4 $time $year"
+    echo "${serverIP},$CATALINA_BASE,$pid,$START,$cpu,$mem,$DISK" >> $TMP_CSV
+done
+
+# Move temp CSV to common location
+mv $TMP_CSV $CSV
+'''
+
+                        // Execute remotely and fetch CSV
+                        sshExecute(serverIP, credID, cmd)
+
+                        // Fetch remote CSV and append to Jenkins CSV
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: credID,
+                                usernameVariable: 'SSH_USER',
+                                passwordVariable: 'SSH_PASS'
+                            )
+                        ]) {
+                            sh '''
+export SSHPASS="$SSH_PASS"
+sshpass -e scp -o StrictHostKeyChecking=no "$SSH_USER@''' + serverIP + ''':/tmp/${CSV_REPORT}" /tmp/${CSV_REPORT}_${serverIP}
+cat /tmp/${CSV_REPORT}_${serverIP} | tail -n +2 >> ${CSV_REPORT}
+'''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Generate HTML Report') {
+            steps {
+                sh '''
+# Create HTML
+cat <<HTML > ${HTML_REPORT}
+<html>
+<head>
+<style>
+body { font-family: Arial; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #2f4f4f; color: white; }
+</style>
+</head>
+<body>
+<h2>Tomcat & Server Utilization Report</h2>
+<table>
+<tr>
+<th>Server</th><th>Tomcat Path</th><th>PID</th><th>Start Time</th><th>CPU (%)</th><th>Memory (%)</th><th>Disk Usage</th>
+</tr>
+HTML
+
+tail -n +2 ${CSV_REPORT} | while IFS=',' read server path pid start cpu mem disk
+do
+    echo "<tr><td>$server</td><td>$path</td><td>$pid</td><td>$start</td><td>$cpu</td><td>$mem</td><td>$disk</td></tr>" >> ${HTML_REPORT}
+done
+
+echo "</table></body></html>" >> ${HTML_REPORT}
+'''
+            }
+        }
+
+        stage('Generate Excel Report') {
+            steps {
+                sh '''
+python3 << 'EOF'
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import Font
+
+df = pd.read_csv("${CSV_REPORT}")
+df.to_excel("${EXCEL_REPORT}", index=False)
+
+wb = load_workbook("${EXCEL_REPORT}")
+ws = wb.active
+
+for c in ws[1]:
+    c.font = Font(bold=True)
+
+for col in ws.columns:
+    ws.column_dimensions[col[0].column_letter].width = max(len(str(c.value)) for c in col) + 2
+
+wb.save("${EXCEL_REPORT}")
+EOF
+'''
+            }
+        }
+
+        stage('Archive & Email') {
+            steps {
+                archiveArtifacts artifacts: "${HTML_REPORT}, ${EXCEL_REPORT}", fingerprint: true
+
+                emailext(
+                    to: "${EMAIL_TO}",
+                    subject: "Tomcat Utilization Report – Multi-Server",
+                    mimeType: 'text/html',
+                    body: "Hello Team,<br><br>Please find attached the Tomcat & Server utilization report for all configured servers.<br><br>Regards,<br>Jenkins Automation",
+                    attachmentsPattern: "${HTML_REPORT}, ${EXCEL_REPORT}"
+                )
+            }
+        }
+    }
+}
+
+// ----------------------- Reusable SSH Function -----------------------
+def sshExecute(String serverIP, String sshCredentials, String cmd) {
+    withCredentials([
+        usernamePassword(
+            credentialsId: sshCredentials,
+            usernameVariable: 'SSH_USER',
+            passwordVariable: 'SSH_PASSWORD'
+        )
+    ]) {
+        sh(
+            script: '''#!/bin/bash
+export SSHPASS="$SSH_PASSWORD"
+sshpass -e ssh -o StrictHostKeyChecking=no "$SSH_USER@''' + serverIP + '''" << 'SSH_EOF'
+''' + cmd + '''
+SSH_EOF
+''',
+            returnStdout: false
+        )
+    }
+}

@@ -1,0 +1,351 @@
+/* groovylint-disable DuplicateStringLiteral */
+import java.net.URLEncoder
+
+projectType = '' //-> Empty Variable Initialised for keeping track of Project types {'Gradle' or 'Maven'}
+jarFileName = '' // -> Empty Variable Initialised for keeping track of new JAR Files
+appName = '' // -> Extract the Package name of Project
+prodName = 'DevopsTest##1.0.5'//*// //-> Please input the exact name that needs to be given in production site.
+
+pipeline {
+    agent any
+
+    tools {
+        maven 'jenkins-maven'
+        gradle 'jenkins-gradle'
+        //jdk 'Java8'//, version: '8u392-ga-1'
+        //jdk 'Java11'//, version: '11.0.22'
+        jdk 'Java17'//, version: '17.0.10'
+        //jdk 'Java21'//, version: '21.0.2'
+    }
+
+    environment {
+        useSonar = 'true'
+
+        //Git Variables
+        gitCredentials = 'GauravSingh_GitAcc'
+        GIT_URL = 'https://github.com/GauravXs/DevopsKubernetesTest.git'
+        GIT_BRANCH = 'main'
+
+        //Variables for Sonarqube Server
+        sonarqube_ip = '127.0.0.1' //Only IPv4 and no need to add http:// or https://
+        sonarqube_port = '9000'
+        sonar_login_token = 'sqp_216c284dad55d99a224a79c10e1350c9370296f6'
+        sonar_project_key = 'HelloWorld'
+
+        NEXUS_VERSION = 'nexus3'
+        NEXUS_PROTOCOL = 'http'
+        NEXUS_IP = '127.0.0.1' //Only IPv4 and no need to add http:// or https://
+        NEXUS_PORT = '8083'
+        NEXUS_REPOSITORY = 'kubernetestest'
+        NEXUS_CREDENTIAL_ID = 'nexus_cred'
+        ARTIFACT_VERSION = '\${BUILD_NUMBER}'
+
+        AWS_ECR_REPO = 'mobicule-test-repo-ecr'
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = '123362706831'
+        AWS_CREDENTIALS_ID = 'aws-credentials'
+
+        //E-MAIL Variables
+        RECIPIENTS_NAME = 'gourav.singh@mobicule.com'
+        PASS_SUBJECT = '\${DEFAULT_SUBJECT}'
+        PASS_CONTENT = 'Jenkins Pipeline Build \${BUILD_NUMBER} Passed Successfully \n \${DEFAULT_CONTENT}'
+        UNSTABLE_SUBJECT = '\${DEFAULT_SUBJECT}'
+        UNSTABLE_CONTENT = 'Jenkins Pipeline Build ${BUILD_NUMBER} is UNSTABLE \${DEFAULT_CONTENT}'
+        FAIL_SUBJECT = '\${DEFAULT_SUBJECT}'
+        FAIL_CONTENT = 'Jenkins Pipeline Build \${BUILD_NUMBER} FAILED... Attention Required! \${DEFAULT_CONTENT}'
+    }
+
+    stages {
+        stage('Pre-Condition Check') {
+            steps {
+                script {
+                    String gitURL = env.GIT_URL.replaceAll('^https://', '')
+                    echo 'Checking GitHub repository availability...'
+                    // Use git ls-remote with credentials from Jenkins credentials
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: gitCredentials,
+                            usernameVariable: 'USERNAME',
+                            passwordVariable: 'PASSWORD'
+                            )
+                            ]) {
+                    String encodedUsername = URLEncoder.encode(USERNAME, 'UTF-8')
+                    String encodedPassword = URLEncoder.encode(PASSWORD, 'UTF-8')
+
+                    sh """
+                                    set +x  # Disable echoing to hide sensitive information
+                                    git ls-remote --exit-code https://${encodedUsername}:${encodedPassword}@${gitURL} || (echo 'GitHub repository is not reachable, exiting.' && exit 1)
+                                    set -x  # Enable echoing
+                                """
+                            }
+                    echo 'GitHub repository is reachable. Proceeding with the pipeline.'
+                    if (useSonar == 'true') {
+                        // Check SonarQube Server availability
+                        echo "SonarQube IP: ${env.sonarqube_ip}, Port: ${env.sonarqube_port}"
+                        netCheck(env.sonarqube_ip, env.sonarqube_port, 'SonarQube')
+                    }
+                }
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                script {
+                    echo 'Pausing the pipeline...'
+                    input message: '''Clean Directory
+                    Do you want to continue?''', ok: 'Resume'
+                    echo 'Resuming the pipeline...'
+
+                    //cleanWs()
+                    echo "Workspace Cleaned"
+                    sh "rm -rf \${JENKINS_HOME}/workspace/\${JOB_NAME}/*"
+                }
+            }
+        }
+
+        stage('Git Pull') {
+            steps {
+                script {
+                    def branchName = env.GIT_BRANCH.replaceAll('^origin/', '')
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: branchName]],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        userRemoteConfigs: [[credentialsId: gitCredentials, url: GIT_URL]]])
+                    echo "${GIT_URL}" //Git URL is selected on the pipeline configuration page
+                    echo "${GIT_BRANCH}" //Git Branch is selected on the pipeline configuration page
+                }
+            }
+        }
+
+        stage('Check Project Build Tool') {
+            steps {
+                script {
+                    sh '''
+                        java -version
+                        javac -version
+                    '''
+                    echo 'Check Build Tool (Gradle or Maven....)'
+                    projectType = 'Maven'
+                    if (fileExists('build.gradle')) {
+                        projectType = 'Gradle'
+                        echo 'Gradle project detected'
+                        sh 'gradle -version'
+                    } else if (fileExists('pom.xml')) {
+                        projectType = 'Maven'
+                        echo 'Maven project detected'
+                    } else {
+                        error 'No build file found! Not a valid Gradle or Maven project.'
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            when {
+                expression { useSonar == 'true' }
+            }
+            steps {
+                script {
+                    if (projectType == 'Gradle') {
+                        echo 'Running SonarQube analysis...'
+                        // Set GRADLE_OPTS to increase the memory allocation
+                        withEnv(["GRADLE_OPTS=-Xmx4096m -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs='-Xmx4096m'"]) {
+                            sh """
+                                cd \${JENKINS_HOME}/workspace/\${JOB_NAME}
+                                chmod +x gradlew
+
+                                ./gradlew clean build sonar \
+                                -Dsonar.projectKey=$sonar_project_key \
+                                -Dsonar.host.url=http://$sonarqube_ip:$sonarqube_port \
+                                -Dsonar.token=$sonar_login_token
+                            """
+                        }
+                    } else if (projectType == 'Maven') {
+                        sh """
+                            echo "Running SonarQube analysis..."
+                            cd \${JENKINS_HOME}/workspace/\${JOB_NAME}
+
+                            mvn clean verify sonar:sonar \
+                                -Dsonar.projectKey=\$sonar_project_key \
+                                -Dsonar.host.url=http://\${sonarqube_ip}:\${sonarqube_port} \
+                                -Dsonar.login=\${sonar_login_token}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    jarPath = ''
+                    if (projectType == 'Gradle') {
+                        jarPath = 'build/libs'
+                        echo 'Building Project Artifact using Gradle'
+                        withEnv(["GRADLE_OPTS=-Xmx4096m -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs='-Xmx4096m'"]) {
+                        sh 'chmod +x gradlew'
+                        sh """
+                            ./gradlew assemble -Dorg.gradle.java.home="/usr/lib/jvm/java-11-openjdk"
+                            #./gradlew clean build -Dorg.gradle.java.home="/usr/lib/jvm/java-11-openjdk"
+                            #ls -lah ${JENKINS_HOME}/workspace/${JOB_NAME}/build/libs/
+                        """
+                        }
+                    } else if (projectType == 'Maven') {
+                        jarPath = 'target'
+                        echo 'Building Project Artifact using Maven...'
+                        dir("${JENKINS_HOME}/workspace/${JOB_NAME}") {
+                            sh 'mvn clean package install -f pom.xml'
+                        }
+                    }
+                    // sh """
+                    //     mv ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/*.jar ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/${prodName}.jar
+                    //     ls -lah ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/
+                    // """
+                    sh """
+                        jarFile=\$(ls ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/*.jar | head -n 1)
+                        echo "Source file: \$jarFile"
+                        echo "Destination file: ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/${prodName}.jar"
+
+                        if [ "\$jarFile" != "${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/${prodName}.jar" ]; then
+                            mv \$jarFile ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/${prodName}.jar
+                            echo "File renamed successfully."
+                        else
+                            echo "File name is perfect, no need to change"
+                        fi
+
+                        ls -lah ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/
+                    """
+                    getName("${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/*.jar")
+
+                    filename = sh(script: "ls ${JENKINS_HOME}/workspace/${JOB_NAME}/${jarPath}/${jarFileName}", returnStdout:true).trim()
+                    appName = sh(script: """basename ${filename} | sed 's/##.*//'""", returnStdout:true).trim()
+                    echo "Application Name: $appName"
+                }
+            }
+        }
+
+        // stage('Docker Build & Push') {
+        //      steps {
+        //              script {
+        //                      def dockerRegistry = "${NEXUS_IP}:${NEXUS_PORT}/${NEXUS_REPOSITORY}"
+        //                      def imageName = "${appName}".toLowerCase() // appName was extracted earlier
+
+        //                      withCredentials([usernamePassword(credentialsId: 'nexus_cred',
+        //                                                                                       usernameVariable: 'DOCKER_USER',
+        //                                                                                       passwordVariable: 'DOCKER_PASS')]) {
+        //                              sh """
+        //                                echo "$DOCKER_PASS" | docker login ${NEXUS_IP}:${NEXUS_PORT} --username "$DOCKER_USER" --password-stdin
+
+        //                                # Move JAR to build context
+        //                                cp ${JENKINS_HOME}/workspace/${JOB_NAME}/build/libs/${prodName}.jar .
+
+        //                                # Build Docker image
+        //                                cd devops
+        //                                docker build -t ${dockerRegistry}/${imageName}:${BUILD_NUMBER} -t ${dockerRegistry}/${imageName}:latest .
+
+        //                                # Push to Nexus
+        //                                docker push ${dockerRegistry}/${imageName}:${BUILD_NUMBER}
+        //                                docker push ${dockerRegistry}/${imageName}:latest
+        //                              """
+        //                      }
+        //              }
+        //      }
+        // }
+
+        stage('Docker Build & Push to Container Registry') {
+            steps {
+                script {
+                    def dockerRegistry = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                    def imageName      = "${AWS_ECR_REPO}".toLowerCase()
+
+                    withCredentials([usernamePassword(
+                        credentialsId: 'aws-ecr-creds',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )]) {
+
+                        sh """
+                        set -e
+
+                        #Move JAR to build context
+                        cp ${JENKINS_HOME}/workspace/${JOB_NAME}/build/libs/${prodName}.jar .
+
+                        # Build Docker image
+                        cd devops
+                        docker build -t ${dockerRegistry}/${imageName}:${BUILD_NUMBER} -t ${dockerRegistry}/${imageName}:latest .
+
+                        echo "Logging in to AWS ECR..."
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${dockerRegistry}
+
+                        echo "Pushing Docker image to ECR..."
+                        docker push ${dockerRegistry}/${imageName}:${BUILD_NUMBER}
+                        docker push ${dockerRegistry}/${imageName}:latest
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                if (currentBuild.currentResult == 'FAILURE') {
+                    sh 'echo "Build result has changed to FAILURE"'
+                    emailext subject: "${FAIL_SUBJECT}",
+                        body: "${FAIL_CONTENT}",
+                        attachLog: true,
+                        to: "${RECIPIENTS_NAME}"
+                } else if (currentBuild.currentResult == 'UNSTABLE') {
+                    sh 'echo "Build result has changed to UNSTABLE"'
+                    emailext subject: "${UNSTABLE_SUBJECT}",
+                        body: "${UNSTABLE_CONTENT}",
+                        attachLog: true,
+                        to: "${RECIPIENTS_NAME}"
+                } else if (currentBuild.currentResult == 'SUCCESS') {
+                    sh 'echo "Build SUCCESS"'
+                    /* /////////////////////////
+                    emailext subject: "${PASS_SUBJECT}",
+                        body: "${PASS_CONTENT}",
+                        attachLog: true,
+                        // recipientProviders: [
+                        //     [$class: 'CulpritsRecipientProvider'],
+                        //     [$class: 'DevelopersRecipientProvider'],
+                        //     [$class: 'RequesterRecipientProvider']
+                        // ],
+                        //replyTo: "${DEFAULT_REPLYTO}",
+                        to: "${RECIPIENTS_NAME}"
+                ////////////////// */
+                } else if (currentBuild.currentResult == 'ABORTED') {
+                    sh 'echo "Build result has changed to ABORTED"'
+                    emailext subject: "Build ${BUILD_NUMBER} Aborted",
+                        body: 'The build was aborted.',
+                        attachLog: true,
+                        to: "${RECIPIENTS_NAME}"
+                } else {
+                    sh 'echo "Build result has changed to UNKNOWN"'
+                    emailext subject: "Unknown Build ${BUILD_NUMBER}",
+                        body: "Unknown Build ${BUILD_NUMBER} ",
+                        attachLog: true,
+                        to: "${RECIPIENTS_NAME}"
+                }
+            }
+        }
+    }
+}
+
+def netCheck(String ip, String port, String name) {
+    sh """
+        echo "Checking ${name} Server availability..."
+        nc -zv -w5 ${ip} ${port} || (echo "${name} is not reachable on http://${ip}:${port}, exiting." && exit 1)
+        echo "${name} Server is reachable. Continuing with the Test"
+    """
+}
+
+def getName(String namePath) {
+    jarFileName = sh(script: "basename ${namePath}", returnStdout: true).trim()
+    echo "New JAR file: ${jarFileName}"
+    env.NEW_JAR_FILE = jarFileName
+    echo "Value for jarFileName -> $jarFileName"
+}

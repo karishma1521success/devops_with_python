@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         SONAR_URL  = "http://127.0.0.1:9000"
-        SONAR_USER = "admin"
-        SONAR_PASS = "mobicule"
+        SONAR_USER = ""               // Use appropriate SonarQube admin username
+        SONAR_PASS = ""               // Use appropriate SonarQube admin password
 
         TOKEN_FILE = "/var/lib/jenkins/sonarqube/tokens/sonarqube_project_tokens.csv"
     }
@@ -16,16 +16,11 @@ pipeline {
                 script {
 
                     def PROJECTS = [
-                        [name: "kotak-consumer-prod-mcollect-core-c2c",        key: "kotak-consumer-prod-c2c",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-integration", key: "kotak-consumer-prod-integration",       tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-schedular",       key: "kotak-consumer-prod-schedular",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-web-adfs",       key: "kotak-consumer-prod-core-web-adfs",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-core-web-adfs-settlement",       key: "kotak-consumer-prod-core-web-adfs-settlement",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-consumer",       key: "kotak-consumer-prod-consumer",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-dashboard",       key: "kotak-consumer-prod-dashboard",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-shortener",       key: "kotak-consumer-prod-shortener",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-web",       key: "kotak-consumer-prod-web",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-webhook",       key: "kotak-consumer-prod-webhook",        tag: "kotak-consumer-digital-prod"]
+                        [name: "project_name1",        key: "project_key1",        tag: "project-tag1"],
+                        [name: "project_name2",        key: "project_key2",        tag: "project-tag2"],
+                        [name: "project_name3",        key: "project_key3",        tag: "project-tag3"],
+                        [name: "project_name4",        key: "project_key4",        tag: "project-tag4"],
+                        [name: "project_name5",        key: "project_key5",        tag: "project-tag5"]
                     ]
 
                     sh """

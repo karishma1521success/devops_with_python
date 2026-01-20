@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    environment {
+        NEXUS_URL = 'http://127.0.0.1:8081'
+        NEXUS_USER = "admin"      // move to credentials later
+        NEXUS_PASSWORD = "nexus"
+    }
+
+    stages {
+        stage('Create Nexus Repositories') {
+            steps {
+                script {
+
+                    // 🔹 VARIABLES (edit here only)
+                    def BLOBSTORE = "Kotak-Consumer-Prod" 
+
+                    def REPOS = [
+                        "kotak-consumer-prod-mcollect-core-c2c",
+                        "kotak-consumer-prod-mcollect-core-jar",
+                        "kotak-consumer-prod-mcollect-core-integration",
+                        "kotak-consumer-prod-mcollect-core-schedular",
+                        "kotak-consumer-prod-mcollect-core-web-adfs",
+                        "kotak-consumer-prod-core-web-adfs-settlement",
+                        "kotak-consumer-prod-mcollect-digital-collection-consumer",
+                        "kotak-consumer-prod-mcollect-digital-collection-dashboard",
+                        "kotak-consumer-prod-mcollect-digital-collection-shortener",
+                        "kotak-consumer-prod-mcollect-digital-collection-web",
+                        "kotak-consumer-prod-mcollect-digital-collection-webhook"
+                    ]
+
+                    for (repo in REPOS) {
+
+                        echo "Creating Nexus repository: ${repo}"
+
+                        sh """
+                        curl -s -o /dev/null -w "%{http_code}" \\
+                          -u ${NEXUS_USER}:${NEXUS_PASSWORD} \\
+                          -X POST ${NEXUS_URL}/service/rest/v1/repositories/maven/hosted \\
+                          -H "Content-Type: application/json" \\
+                          -d '{
+                            "name": "${repo}",
+                            "online": true,
+                            "storage": {
+                              "blobStoreName": "${BLOBSTORE}",
+                              "strictContentTypeValidation": false,
+                              "writePolicy": "ALLOW"
+                            },
+                            "cleanup": {
+                              "policyNames": ["Devops-Maven-policy"]
+                            },
+                            "maven": {
+                              "versionPolicy": "MIXED",
+                              "layoutPolicy": "PERMISSIVE"
+                            },
+                            "component": {
+                              "proprietary": true
+                            },
+                            "format": "maven2",
+                            "recipeName": "maven2-hosted"
+                          }'
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

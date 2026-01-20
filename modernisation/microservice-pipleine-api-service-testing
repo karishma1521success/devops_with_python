@@ -1,0 +1,319 @@
+/* groovylint-disable DuplicateStringLiteral */
+import java.net.URLEncoder
+
+def projectType = ''
+
+pipeline {
+    agent any
+
+    tools {
+        maven 'jenkins-maven'
+        gradle 'jenkins-gradle'
+        //jdk 'Java8'//, version: '8u392-ga-1'
+        //jdk 'Java11'//, version: '11.0.22'
+        // jdk 'Java17'//, version: '17.0.10'
+        jdk 'Java21'//, version: '21.0.2'
+    }
+
+    /*************************************************
+     * MANUAL TRIGGER ONLY
+     * (No GitHub webhook / no SCM polling)
+     *************************************************/
+
+    /*************************************************
+     * ENVIRONMENT
+     *************************************************/
+    environment {
+        /* ===== SERVICE CONFIG ===== */
+        SERVICE_NAME = 'service-registry'   //replace  with your service name
+        SERVICE_DIR  = 'service-registry'   //replace  with your service directory name
+
+
+        /* ===== IMAGE TAG ===== */
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+
+        //Git Variables
+        gitCredentials = 'Git-Yatinpednekar'
+        GIT_URL        = 'https://repo.mobicule.com/receivable-management/server/mcollect-digital/communication-gateway/'
+        GIT_BRANCH     = 'main'
+
+        /* ===== AWS / ECR ===== */
+        AWS_REGION     = 'ap-south-1'
+        AWS_ACCOUNT_ID = '123362706831'  //123362706831
+        // ECR_REPO       = "mobicule-prod-${SERVICE_NAME}-ecr"
+        ECR_REPO  = "mobicule-test-repo-ecr"
+
+        //Variables for Sonarqube Server
+        useSonar = 'true'
+        sonarqube_ip = '127.0.0.1' //Only IPv4 and no need to add http:// or https://
+        sonarqube_port = '9000'
+        sonar_login_token = 'sqp_659f7194fcf1ac31629782699a95cacca77f4e11'    
+        // sonar_project_key = "${SERVICE_NAME}"
+        sonar_project_key = "modern-test-api-service-registry"
+
+    }
+
+    stages {
+        stage('Pre-Condition Check') {
+            steps {
+                script {
+                    String gitURL = env.GIT_URL.replaceAll('^https://', '')
+                    echo 'Checking GitHub repository availability...'
+                    // Use git ls-remote with credentials from Jenkins credentials
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: gitCredentials,
+                            usernameVariable: 'USERNAME',
+                            passwordVariable: 'PASSWORD'
+                            )
+                            ]) {
+                    String encodedUsername = URLEncoder.encode(USERNAME, 'UTF-8')
+                    String encodedPassword = URLEncoder.encode(PASSWORD, 'UTF-8')
+
+                    sh """
+                                    set +x  # Disable echoing to hide sensitive information
+                                    git ls-remote --exit-code https://${encodedUsername}:${encodedPassword}@${gitURL} || (echo 'GitHub repository is not reachable, exiting.' && exit 1)
+                                    set -x  # Enable echoing
+                                """
+                            }
+                    echo 'GitHub repository is reachable. Proceeding with the pipeline.'
+                    if (env.useSonar == 'true') {
+                        // Check SonarQube Server availability
+                        echo "SonarQube IP: ${env.sonarqube_ip}, Port: ${env.sonarqube_port}"
+                        netCheck(env.sonarqube_ip, env.sonarqube_port, 'SonarQube')
+                    }
+                }
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                script {
+                    echo 'Pausing the pipeline...'
+                    input message: '''Clean Directory
+                    Do you want to continue?''', ok: 'Resume'
+                    echo 'Resuming the pipeline...'
+                    
+                    cleanWs()
+                    echo "Workspace Cleaned"
+                    // sh "rm -rf \${JENKINS_HOME}/workspace/\${JOB_NAME}/*"
+                }
+            }
+        }
+
+        /* =================================================
+           1. CHECKOUT FULL MONOREPO
+           ================================================= */
+        stage('Checkout Code') {
+            steps {
+                script {
+                    def branchName = env.GIT_BRANCH.replaceAll('^origin/', '')
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: branchName]],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        userRemoteConfigs: [[credentialsId: gitCredentials, url: env.GIT_URL]]])
+                    echo "${env.GIT_URL}" //Git URL is selected on the pipeline configuration page
+                    echo "${env.GIT_BRANCH}" //Git Branch is selected on the pipeline configuration page
+                }
+            }
+        }
+
+        /* =================================================
+           2. CHECK PROJECT BUILD TOOL
+           ================================================= */
+        stage('Check Project Build Tool') {
+            steps {
+                script {
+                    sh '''
+                        java -version
+                        javac -version
+                    '''
+                    echo 'Check Build Tool (Gradle or Maven....)'
+                    projectType = 'Maven'
+                    if (fileExists("${SERVICE_NAME}/build.gradle")) {
+                        projectType = 'Gradle'
+                        echo 'Gradle project detected'
+                        sh './gradlew -version'
+                    } else if (fileExists("${SERVICE_NAME}/pom.xml")) {
+                        projectType = 'Maven'
+                        echo 'Maven project detected'
+                    } else {
+                        error 'No build file found! Not a valid Gradle or Maven project.'
+                    }
+                }
+            }
+        }
+
+        /* =================================================
+           4. SONARQUBE ANALYSIS (MODULE SCOPED)
+           ================================================= */
+
+        stage('SonarQube Analysis') {
+            when {
+                expression { env.useSonar == 'true' }
+            }
+            steps {
+                script {
+                    if (projectType == 'Gradle') {
+                        echo 'Running SonarQube analysis...'
+                        // Set GRADLE_OPTS to increase the memory allocation
+                        withEnv(["GRADLE_OPTS=-Xmx4096m -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs='-Xmx4096m'"]) {
+                            sh """
+                                cd \${JENKINS_HOME}/workspace/\${JOB_NAME}
+                                # Added in api and service registry only because docker file is not running from the root context.
+                                
+                                cd ${SERVICE_NAME}
+                                chmod +x gradlew
+
+                                ./gradlew sonar \
+                                -Dsonar.projectKey=${sonar_project_key} \
+                                -Dsonar.host.url=http://${sonarqube_ip}:${sonarqube_port} \
+                                -Dsonar.token=${sonar_login_token}
+                            """
+                        }
+                    } else if (projectType == 'Maven') {
+                        sh """
+                            echo "Running SonarQube analysis..."
+                            cd \${JENKINS_HOME}/workspace/\${JOB_NAME}
+
+                            // cd ${SERVICE_NAME}
+                            mvn clean verify sonar:sonar \
+                                -Dsonar.projectKey=\$sonar_project_key \
+                                -Dsonar.host.url=http://\${sonarqube_ip}:\${sonarqube_port} \
+                                -Dsonar.login=\${sonar_login_token}
+                        """
+                    }
+                }
+            }
+        }
+
+        /* =================================================
+           6. DOCKER BUILD (ROOT CONTEXT)
+           ================================================= */
+        stage('Docker Build') {
+            steps {
+                sh """
+                    echo "Building Docker image for ${SERVICE_NAME}"
+                    echo "Docker Image Tag: ${IMAGE_TAG}"
+
+                    # cd into the service directory only for the api gateway service and service registry
+                    cd ${SERVICE_NAME}
+                    docker build -t ${SERVICE_NAME}:${IMAGE_TAG} .
+                """
+            }
+        }
+
+        /* =================================================
+         7. VALIDATE DOCKER IMAGE (FAIL FAST)
+        ================================================= */
+
+        stage('Validate Docker Image') {
+            steps {
+                sh """
+                    echo "Validating Docker image... ${SERVICE_NAME}"
+                    docker images | grep ${SERVICE_NAME}:${IMAGE_TAG}
+
+
+                    CONTAINER_NAME=${SERVICE_NAME}-validate-${IMAGE_TAG}
+
+                    # Start container detached
+                    docker run -d --name \$CONTAINER_NAME ${SERVICE_NAME}:${IMAGE_TAG}
+    
+                    # Wait for a few seconds to let the container start
+                    sleep 20
+
+                    # Check if Java is installed
+                    docker exec \$CONTAINER_NAME java -version
+
+                    # Optional: Check Spring Boot health endpoint internally
+
+                    # Logs for debugging
+                    docker logs \$CONTAINER_NAME | tail -n 50
+
+                    # Stop and remove container
+                    docker rm -f \$CONTAINER_NAME
+                """
+            }
+        }
+
+        /* =================================================
+           8. LOGIN TO AWS ECR
+           ================================================= */
+        stage('Login to AWS ECR') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-ecr-cred'
+                ]]) {
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} \
+                        | docker login \
+                          --username AWS \
+                          --password-stdin \
+                          ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    """
+                }
+            }
+        }
+
+        /* =================================================
+           9. TAG IMAGE
+           ================================================= */
+        stage('Tag Image') {
+            steps {
+                sh """
+
+                    # Tag the image with ECR repository URI with build number
+                    docker tag ${SERVICE_NAME}:${IMAGE_TAG} \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+
+                    # Tag the image with ECR repository URI with 'latest' tag
+                    docker tag ${SERVICE_NAME}:${IMAGE_TAG} \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+                """
+            }
+        }
+
+        /* =================================================
+           10. PUSH IMAGE TO ECR
+           ================================================= */
+        stage('Push Image to ECR') {
+            steps {
+                sh """
+                    docker push \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+
+                    docker push \
+                    ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "CI SUCCESS"
+            echo "Service: ${SERVICE_NAME}"
+            echo "Image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+        }
+        failure {
+            echo "CI FAILED – investigate immediately"
+        }
+        aborted {
+            echo "PIPELINE ABORTED"
+        }
+        // always {
+        //     cleanWs()
+        // }
+    }
+}
+
+
+def netCheck(String ip, String port, String name) {
+    sh """
+        echo "Checking ${name} Server availability..."
+        nc -zv -w5 ${ip} ${port} || (echo "${name} is not reachable on http://${ip}:${port}, exiting." && exit 1)
+        echo "${name} Server is reachable. Continuing with the Test"
+    """
+}
