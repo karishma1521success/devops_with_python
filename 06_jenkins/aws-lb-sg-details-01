@@ -1,0 +1,151 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION = 'ap-south-1'
+    REPORT_DIR = 'alb-report'
+  }
+
+  stages {
+
+    stage('Collect AWS Data (READ-ONLY)') {
+      steps {
+        sh '''
+          set -e
+          mkdir -p ${REPORT_DIR}
+
+          echo "Fetching AWS Account ID..."
+          aws sts get-caller-identity --output json > ${REPORT_DIR}/account.json
+
+          ACCOUNT_ID=$(jq -r '.Account' ${REPORT_DIR}/account.json)
+
+          # Create readable account name without IAM permissions
+          echo "{ \\"AccountName\\": \\"Account-${ACCOUNT_ID}\\" }" > ${REPORT_DIR}/alias.json
+
+          echo "Fetching ALB details..."
+          aws elbv2 describe-load-balancers \
+            --region ${AWS_REGION} \
+            --output json > ${REPORT_DIR}/albs.json
+
+          echo "Extracting Security Groups..."
+          SG_IDS=$(jq -r '.LoadBalancers[].SecurityGroups[]?' ${REPORT_DIR}/albs.json | sort -u)
+
+          if [ -n "$SG_IDS" ]; then
+            aws ec2 describe-security-groups \
+              --region ${AWS_REGION} \
+              --group-ids $SG_IDS \
+              --output json > ${REPORT_DIR}/sgs.json
+          else
+            echo '{ "SecurityGroups": [] }' > ${REPORT_DIR}/sgs.json
+          fi
+        '''
+      }
+    }
+
+    stage('Generate Human-Readable Reports') {
+      steps {
+        sh '''
+python3 << 'EOF'
+import json, datetime, pandas as pd
+
+# Load data
+account = json.load(open("alb-report/account.json"))
+alias = json.load(open("alb-report/alias.json"))
+albs = json.load(open("alb-report/albs.json")).get("LoadBalancers", [])
+sgs = {s["GroupId"]: s for s in json.load(open("alb-report/sgs.json")).get("SecurityGroups", [])}
+
+account_name = alias.get("AccountName", "N/A")
+account_id = account.get("Account")
+
+# Excel writer
+writer = pd.ExcelWriter("alb-report/ALB_Security_Report.xlsx", engine="openpyxl")
+
+# ---------------- Account Summary ----------------
+summary_df = pd.DataFrame([{
+    "Account Name": account_name,
+    "Account ID": account_id,
+    "Region": "ap-south-1",
+    "Generated On": datetime.datetime.now().strftime("%d-%b-%Y %H:%M")
+}])
+summary_df.to_excel(writer, sheet_name="Account_Summary", index=False)
+
+html = f"""
+<h1>AWS ALB Security Group Report</h1>
+<p>
+<b>Account:</b> {account_name}<br>
+<b>Account ID:</b> {account_id}<br>
+<b>Region:</b> ap-south-1<br>
+<b>Generated:</b> {datetime.datetime.now()}
+</p>
+"""
+
+# ---------------- ALB Summary ----------------
+alb_rows = []
+for alb in albs:
+    alb_rows.append({
+        "ALB Name": alb["LoadBalancerName"],
+        "Type": alb["Type"],
+        "Scheme": alb["Scheme"],
+        "VPC": alb["VpcId"],
+        "Security Groups": ", ".join(alb.get("SecurityGroups", []))
+    })
+
+alb_df = pd.DataFrame(alb_rows)
+alb_df.to_excel(writer, sheet_name="ALB_Summary", index=False)
+html += "<h2>ALB Summary</h2>"
+html += alb_df.to_html(index=False)
+
+# ---------------- Security Group Rules ----------------
+for alb in albs:
+    html += f"<h2>ALB: {alb['LoadBalancerName']}</h2>"
+
+    for sg_id in alb.get("SecurityGroups", []):
+        sg = sgs.get(sg_id)
+        if not sg:
+            continue
+
+        html += f"<h3>Security Group: {sg_id} ({sg['GroupName']})</h3>"
+
+        inbound, outbound = [], []
+
+        for r in sg.get("IpPermissions", []):
+            inbound.append({
+                "Protocol": r["IpProtocol"],
+                "Port": f"{r.get('FromPort', 'ALL')} - {r.get('ToPort', 'ALL')}",
+                "Source": ", ".join(i.get("CidrIp", "") for i in r.get("IpRanges", [])) or "N/A"
+            })
+
+        for r in sg.get("IpPermissionsEgress", []):
+            outbound.append({
+                "Protocol": r["IpProtocol"],
+                "Port": f"{r.get('FromPort', 'ALL')} - {r.get('ToPort', 'ALL')}",
+                "Destination": ", ".join(i.get("CidrIp", "") for i in r.get("IpRanges", [])) or "N/A"
+            })
+
+        if inbound:
+            pd.DataFrame(inbound).to_excel(writer, sheet_name=f"{sg_id}_Inbound"[:31], index=False)
+            html += "<h4>Inbound Rules</h4>" + pd.DataFrame(inbound).to_html(index=False)
+
+        if outbound:
+            pd.DataFrame(outbound).to_excel(writer, sheet_name=f"{sg_id}_Outbound"[:31], index=False)
+            html += "<h4>Outbound Rules</h4>" + pd.DataFrame(outbound).to_html(index=False)
+
+writer.close()
+
+with open("alb-report/ALB_Security_Report.html", "w") as f:
+    f.write(html)
+
+print("Reports generated successfully")
+EOF
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      archiveArtifacts artifacts: 'alb-report/*', fingerprint: true
+      echo 'Reports archived successfully'
+    }
+  }
+}

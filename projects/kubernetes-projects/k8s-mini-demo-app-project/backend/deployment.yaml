@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: demoapp-uat
+  labels:
+    app: app-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app-backend
+  template:
+    metadata:
+      labels:
+        app: app-backend
+    spec:
+      containers:
+      - name: app
+        image: hashicorp/http-echo
+        args:
+          - "-text=Hello from Backend Pod"
+        ports:
+        - containerPort: 5678
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"

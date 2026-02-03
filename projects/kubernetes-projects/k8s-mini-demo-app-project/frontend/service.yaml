@@ -5,7 +5,7 @@ metadata:
   namespace: demoapp-uat
 spec:
   selector:
-    app: demoapp-uat
+    app: nginx-frontend
   ports:
     - protocol: TCP
       port: 80
