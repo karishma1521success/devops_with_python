@@ -16,16 +16,16 @@ pipeline {
                 script {
 
                     def PROJECTS = [
-                        [name: "kotak-consumer-prod-mcollect-core-c2c",        key: "kotak-consumer-prod-c2c",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-integration", key: "kotak-consumer-prod-integration",       tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-schedular",       key: "kotak-consumer-prod-schedular",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-core-web-adfs",       key: "kotak-consumer-prod-core-web-adfs",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-core-web-adfs-settlement",       key: "kotak-consumer-prod-core-web-adfs-settlement",        tag: "kotak-consumer-core-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-consumer",       key: "kotak-consumer-prod-consumer",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-dashboard",       key: "kotak-consumer-prod-dashboard",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-shortener",       key: "kotak-consumer-prod-shortener",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-web",       key: "kotak-consumer-prod-web",        tag: "kotak-consumer-digital-prod"],
-                        [name: "kotak-consumer-prod-mcollect-digital-collection-webhook",       key: "kotak-consumer-prod-webhook",        tag: "kotak-consumer-digital-prod"]
+                        [name: "client-prod-mcollect-core-jar", key: "client-prod-core",       tag: "client-core-prod"],
+                        [name: "client-prod-mcollect-core-integration", key: "client-prod-integration",       tag: "client-core-prod"],
+                        [name: "client-prod-mcollect-core-schedular",       key: "client-prod-schedular",        tag: "client-core-prod"],
+                        [name: "client-prod-mcollect-core-web-adfs",       key: "client-prod-core-web-adfs",        tag: "client-core-prod"],
+                        [name: "client-prod-mcollect-core-web",       key: "client-prod-core-web",        tag: "client-core-prod"],
+                        [name: "client-prod-mcollect-digital-collection-consumer",        key: "client-prod-consumer",        tag: "client-digital-prod"],
+                        [name: "client-prod-mcollect-digital-collection-dashboard", key: "client-prod-dashboard",       tag: "client-digital-prod"],
+                        [name: "client-prod-mcollect-digital-collection-shortener",       key: "client-prod-shortener",        tag: "client-digital-prod"],
+                        [name: "client-prod-mcollect-digital-collection-web",       key: "client-prod-web",        tag: "client-digital-prod"],
+                        [name: "client-prod-mcollect-digital-collection-webhook",       key: "client-prod-webhook",        tag: "client-digital-prod"]
                     ]
 
                     sh """
