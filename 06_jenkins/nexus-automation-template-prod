@@ -13,21 +13,20 @@ pipeline {
                 script {
 
                     // 🔹 VARIABLES (edit here only)
-                    def BLOBSTORE = "Kotak-Consumer-Prod" 
+                    def BLOBSTORE = "asirwad-prod" 
 
                     def REPOS = [
-                        "kotak-consumer-prod-mcollect-core-c2c",
-                        "kotak-consumer-prod-mcollect-core-jar",
-                        "kotak-consumer-prod-mcollect-core-integration",
-                        "kotak-consumer-prod-mcollect-core-schedular",
-                        "kotak-consumer-prod-mcollect-core-web-adfs",
-                        "kotak-consumer-prod-core-web-adfs-settlement",
-                        "kotak-consumer-prod-mcollect-digital-collection-consumer",
-                        "kotak-consumer-prod-mcollect-digital-collection-dashboard",
-                        "kotak-consumer-prod-mcollect-digital-collection-shortener",
-                        "kotak-consumer-prod-mcollect-digital-collection-web",
-                        "kotak-consumer-prod-mcollect-digital-collection-webhook"
-                    ]
+                        "asirwad-prod-mcollect-core-jar",
+                        "asirwad-prod-mcollect-core-integration",
+                        "asirwad-prod-mcollect-core-schedular",
+                        "asirwad-prod-mcollect-core-web",
+                        "asirwad-prod-mcollect-core-web-adfs",
+                        "asirwad-prod-mcollect-digital-collection-consumer",
+                        "asirwad-prod-mcollect-digital-collection-dashboard",
+                        "asirwad-prod-mcollect-digital-collection-shortener",
+                        "asirwad-prod-mcollect-digital-collection-web",
+                        "asirwad-prod-mcollect-digital-collection-webhook",
+                       ]
 
                     for (repo in REPOS) {
 
