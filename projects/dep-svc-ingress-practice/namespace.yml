@@ -1,2 +1,13 @@
-Kind: Namespace
+---
+kind: Namespace
 apiVersion: v1
+metadata:
+  name: dep-svc-ingress-namespace
+  labels:
+    environment: uat
+    team: devops
+    application: dep-svc-ingress-application
+  annotations:
+    owner: karishma
+    purpose: Namespace for dep-svc-ingress practice in UAT environment
+    createdOn: "2024-06-15"
