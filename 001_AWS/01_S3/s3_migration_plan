@@ -1,0 +1,15 @@
+Identify and document the current bucket configuration including region, size, object count, versioning, and IAM access.
+Create a temporary S3 bucket (niwas-bucket-temp) in the Mobicule AWS account in the same region with versioning and encryption enabled.
+Configure secure cross-account IAM access to allow the Mobicule account to read data from the Niwas bucket.
+Perform an initial full data sync from the Niwas bucket to the temporary Mobicule bucket without impacting production.
+Validate the sync by comparing object count, total size, and random file integrity checks.
+Schedule a short maintenance window for final cutover.
+Stop all cron jobs and application uploads to prevent new writes during migration.
+Perform a final delta sync to ensure no data loss.
+Delete the original bucket from the Niwas AWS account.
+Immediately recreate the same bucket name in the Mobicule AWS account in the same region.
+Restore all data from the temporary bucket to the newly created final bucket.
+Update IAM roles and remove old cross-account access configurations.
+Restart cron jobs and resume application operations.
+Monitor the system for 24–48 hours to confirm stability.
+Delete the temporary bucket and proceed with Niwas AWS account decommissioning after validation.
