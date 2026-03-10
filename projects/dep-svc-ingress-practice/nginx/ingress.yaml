@@ -6,6 +6,8 @@ metadata:
   namespace: dep-svc-ingress-namespace
 
 spec:
+  ingressClassName: nginx
+
   rules:
   - host: nginx.local
 

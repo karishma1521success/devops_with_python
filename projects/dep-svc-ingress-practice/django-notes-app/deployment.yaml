@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-notes-app-deployment
+  namespace: dep-svc-ingress-namespace
+  labels:
+    app: django-notes-app
+    env: UAT
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: django-notes-app
+      env: UAT
+
+  template:
+    metadata:
+      labels:
+        app: django-notes-app
+        env: UAT
+
+    spec:
+      containers:
+      - name: django-notes-app
+        image: django-notes-app:latest
+        ports:
+        - containerPort: 8000
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
