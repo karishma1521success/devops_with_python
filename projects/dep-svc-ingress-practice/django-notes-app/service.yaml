@@ -1,0 +1,20 @@
+kind: Service 
+apiVersion: v1
+metadata:
+  name: django-notes-app-service
+  namespace: dep-svc-ingress-namespace
+  labels:
+    app: django-notes-app
+    env: UAT
+spec:
+  type: ClusterIP
+  
+  selector:
+    app: django-notes-app
+    env: UAT
+  
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000

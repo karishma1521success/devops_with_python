@@ -21,3 +21,12 @@ spec:
             name: nginx-service
             port:
               number: 80
+
+      - path: /app
+        pathType: Prefix
+
+        backend:
+          service:
+            name: django-notes-app-service
+            port:
+              number: 80
