@@ -21,3 +21,12 @@ spec:
         image: nginx:1.23.0
         ports:
         - containerPort: 80
+
+
+
+
+# kubectl set image deployment/nginx nginx=nginx:1.23
+# kubectl rollout history deployment nginx
+# kubectl annotate deployment nginx kubernetes.io/change-cause="Pick up patch version"
+# kubectl rollout undo deployment nginx
+# kubectl rollout undo deployment nginx --to-revision=2
