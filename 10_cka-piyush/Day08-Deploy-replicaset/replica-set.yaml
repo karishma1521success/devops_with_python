@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: nginx
+    tier: frontend
+spec:
+  # modify replicas according to your case
+  replicas: 4
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name:  nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+
+
+# ------------------------------------
+# Learning Notes
+# ------------------------------------
+
+# 1. kubectl apply -f replica-set.yaml   - To create the objects of the k8s (rs)
+# kubectl describe rs/frontend      - To describe the replica set - also you can use the describe command to get all the details of your k8s objects.
+
+
+ 
+# 2. Imperative way - scale replicaset
+# kubectl scale replicaSet frontend --replicas=6
+
+
