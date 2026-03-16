@@ -21,6 +21,13 @@ spec:
         image: nginx:1.23.0
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
 
 
 
@@ -30,3 +37,22 @@ spec:
 # kubectl annotate deployment nginx kubernetes.io/change-cause="Pick up patch version"
 # kubectl rollout undo deployment nginx
 # kubectl rollout undo deployment nginx --to-revision=2
+
+
+# It means your container does not have CPU or memory resource limits/requests defined.
+
+# Why this warning happens
+
+# In Kubernetes each container should ideally define:
+
+# requests → minimum resources guaranteed
+
+# limits → maximum resources the container can use
+
+# If you don’t define them:
+
+# A container can consume unlimited CPU/memory
+
+# It may affect other pods on the same node
+
+# This is called the “noisy neighbor” problem
