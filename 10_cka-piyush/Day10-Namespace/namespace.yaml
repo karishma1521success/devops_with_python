@@ -1,0 +1,15 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: ns1
+  labels:
+    env: test
+
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: ns2
+  labels:
+    env: test
