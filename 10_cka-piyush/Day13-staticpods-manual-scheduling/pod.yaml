@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx-pod
+  name: nginx-pod
+  namespace: learning
+spec:
+  containers:
+    - image: nginx
+      name: nginx-pod
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  nodeName: minikube-multinode-learning-m02
+
+# In this yaml file we are creating a pod with name nginx-pod in learning namespace. We are using nginx image and we are setting resource limits and requests for cpu and memory. We are also setting dns policy to ClusterFirst and restart policy to Always. Finally we are specifying the node name where we want to schedule this pod.
+# Hence this is a static pod and it will be scheduled on the node minikube-multinode-learning-m02.
+# No need of the scheduler component to schedule this pod as we have specified the node name in the yaml file.
