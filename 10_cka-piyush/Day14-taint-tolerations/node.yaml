@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    node.alpha.kubernetes.io/ttl: "0"
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2026-02-03T06:09:13Z"
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: minikube-multinode-learning-m02
+    kubernetes.io/os: linux
+    minikube.k8s.io/commit: 65318f4cfff9c12cc87ec9eb8f4cdd57b25047f3
+    minikube.k8s.io/name: minikube-multinode-learning
+    minikube.k8s.io/primary: "false"
+    minikube.k8s.io/updated_at: 2026_02_03T11_39_13_0700
+    minikube.k8s.io/version: v1.37.0
+  name: minikube-multinode-learning-m02
+  resourceVersion: "2190730"
+  uid: 790be20f-6126-4995-8071-16ed9a3dad19
+spec:
+  podCIDR: 10.244.1.0/24
+  podCIDRs:
+  - 10.244.1.0/24
+status:
+  addresses:
+  - address: 192.168.58.3
+    type: InternalIP
+  - address: minikube-multinode-learning-m02
+    type: Hostname
+  allocatable:
+    cpu: "12"
+    ephemeral-storage: 459848776Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 16239540Ki
+    pods: "110"
+  capacity:
+    cpu: "12"
+    ephemeral-storage: 459848776Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 16239540Ki
+    pods: "110"
+  conditions:
+  - lastHeartbeatTime: "2026-03-24T08:58:36Z"
+    lastTransitionTime: "2026-02-03T06:09:13Z"
+    message: kubelet has sufficient memory available
+    reason: KubeletHasSufficientMemory
+    status: "False"
+    type: MemoryPressure
+  - lastHeartbeatTime: "2026-03-24T08:58:36Z"
+    lastTransitionTime: "2026-02-03T06:09:13Z"
+    message: kubelet has no disk pressure
+    reason: KubeletHasNoDiskPressure
+    status: "False"
+    type: DiskPressure
+  - lastHeartbeatTime: "2026-03-24T08:58:36Z"
+    lastTransitionTime: "2026-02-03T06:09:13Z"
+    message: kubelet has sufficient PID available
+    reason: KubeletHasSufficientPID
+    status: "False"
+    type: PIDPressure
+  - lastHeartbeatTime: "2026-03-24T08:58:36Z"
+    lastTransitionTime: "2026-02-03T06:09:13Z"
+    message: kubelet is posting ready status
+    reason: KubeletReady
+    status: "True"
+    type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  images:
+  - names:
+    - django-notes-app:v1
+    sizeBytes: 1141756580
+  - names:
+    - registry.k8s.io/etcd@sha256:e36c081683425b5b3bc1425bc508b37e7107bb65dfa9367bf5a80125d431fa19
+    - registry.k8s.io/etcd:3.6.4-0
+    sizeBytes: 194905835
+  - names:
+    - nginx@sha256:a484819eb60211f5299034ac80f6a681b06f89e65866ce91f356ed7c72af059c
+    - nginx:1.25
+    sizeBytes: 187659947
+  - names:
+    - nginx@sha256:dec7a90bd0973b076832dc56933fe876bc014929e14b4ec49923951405370112
+    - nginx:latest
+    sizeBytes: 160926928
+  - names:
+    - kindest/kindnetd@sha256:07a4b3fe0077a0ae606cc0a200fc25a28fa64dcc30b8d311b461089969449f9a
+    - kindest/kindnetd:v20250512-df8de77b
+    sizeBytes: 107973738
+  - names:
+    - registry.k8s.io/kube-apiserver@sha256:fe86fe2f64021df8efa1a939a290bc21c8c128c66fc00ebbb6b5dea4c7a06812
+    - registry.k8s.io/kube-apiserver:v1.34.0
+    sizeBytes: 87968682
+  - names:
+    - registry.k8s.io/coredns/coredns@sha256:e8c262566636e6bc340ece6473b0eed193cad045384401529721ddbe6463d31c
+    - registry.k8s.io/coredns/coredns:v1.12.1
+    sizeBytes: 75043396
+  - names:
+    - registry.k8s.io/kube-controller-manager@sha256:f8ba6c082136e2c85ce71628c59c6574ca4b67f162911cb200c0a51a5b9bff81
+    - registry.k8s.io/kube-controller-manager:v1.34.0
+    sizeBytes: 74923320
+  - names:
+    - registry.k8s.io/kube-proxy@sha256:364da8a25c742d7a35e9635cb8cf42c1faf5b367760d0f9f9a75bdd1f9d52067
+    - registry.k8s.io/kube-proxy:v1.34.0
+    sizeBytes: 71871269
+  - names:
+    - registry.k8s.io/kube-scheduler@sha256:8fbe6d18415c8af9b31e177f6e444985f3a87349e083fe6eadd36753dddb17ff
+    - registry.k8s.io/kube-scheduler:v1.34.0
+    sizeBytes: 52763913
+  - names:
+    - nginx@sha256:02ffd439b71d9ea9408e449b568f65c0bbbb94bebd8750f1d80231ab6496008e
+    - nginx:1.23.4-alpine
+    sizeBytes: 40996497
+  - names:
+    - gcr.io/k8s-minikube/storage-provisioner@sha256:18eb69d1418e854ad5a19e399310e52808a8321e4c441c1dddad8977a0d7a944
+    - gcr.io/k8s-minikube/storage-provisioner:v5
+    sizeBytes: 31465472
+  - names:
+    - registry.k8s.io/pause@sha256:278fb9dbcca9518083ad1e11276933a2e96f23de604a3a08cc3c80002767d24c
+    - registry.k8s.io/pause:3.10.1
+    sizeBytes: 735760
+  nodeInfo:
+    architecture: amd64
+    bootID: c883f705-1064-42c3-bd26-7e677a308d07
+    containerRuntimeVersion: docker://28.4.0
+    kernelVersion: 6.8.0-106-generic
+    kubeProxyVersion: ""
+    kubeletVersion: v1.34.0
+    machineID: 26a66eac87ff4ef3bc2ec97d7fdfdfbc
+    operatingSystem: linux
+    osImage: Ubuntu 22.04.5 LTS
+    swap:
+      capacity: 8589930496
+    systemUUID: 62705147-c1fa-426e-966f-c1402a0cfe7d
+  runtimeHandlers:
+  - features:
+      recursiveReadOnlyMounts: true
+      userNamespaces: false
+    name: ""
+  - features:
+      recursiveReadOnlyMounts: true
+      userNamespaces: false
+    name: io.containerd.runc.v2
+  - features:
+      recursiveReadOnlyMounts: true
+      userNamespaces: false
+    name: runc
