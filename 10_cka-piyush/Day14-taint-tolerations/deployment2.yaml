@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deploy
+  name: redis-deploy
   namespace: learning
   labels:
-    app: nginx
+    app: redis
   annotations:
     owner: "karishma"
     environment: "uat"
     build-version: "latest"
-    description: "Pod will not allocate as every nodes has a taint"
+    description: "information about this deployment"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: redis
   template:
     metadata:
       labels:
-        app: nginx
+        app: redis
     spec:
       containers:
-      - name: nginx
-        image: nginx
+      - name: redis
+        image: redis
         resources:
           requests:
             cpu: "100m"
@@ -32,10 +32,5 @@ spec:
             memory: "250Mi"
         ports:
         - containerPort: 80
-      tolerations:
-      - key: "gpu"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
 
 

@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deploy
+  name: nginx-affinity-deployment
   namespace: learning
   labels:
-    app: nginx
+    app: nginx-affinity
   annotations:
     owner: "karishma"
     environment: "uat"
     build-version: "latest"
-    description: "Pod will not allocate as every nodes has a taint"
+    description: "deployment description"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: nginx-affinity
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx-affinity
     spec:
       containers:
       - name: nginx
@@ -32,10 +32,14 @@ spec:
             memory: "250Mi"
         ports:
         - containerPort: 80
-      tolerations:
-      - key: "gpu"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
-
-
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
