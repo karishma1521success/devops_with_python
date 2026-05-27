@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:123362706831:certificate/a9f1b59b-cb2d-46cc-9862-f418401690db
+    alb.ingress.kubernetes.io/group.name: mb-lb
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/load-balancer-name: mobicule-external-lb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/subnets: subnet-0d4f595209e5df8bb,subnet-08b5f9932b46e8f6f
+    alb.ingress.kubernetes.io/target-type: ip
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"alb.ingress.kubernetes.io/certificate-arn":"arn:aws:acm:ap-south-1:123362706831:certificate/a9f1b59b-cb2d-46cc-9862-f418401690db","alb.ingress.kubernetes.io/group.name":"mb-lb","alb.ingress.kubernetes.io/listen-ports":"[{\"HTTP\":80},{\"HTTPS\":443}]","alb.ingress.kubernetes.io/load-balancer-name":"mobicule-external-lb","alb.ingress.kubernetes.io/scheme":"internet-facing","alb.ingress.kubernetes.io/ssl-redirect":"443","alb.ingress.kubernetes.io/subnets":"subnet-0d4f595209e5df8bb,subnet-08b5f9932b46e8f6f","alb.ingress.kubernetes.io/target-type":"ip"},"labels":{"app.kubernetes.io/instance":"api-gateway","app.kubernetes.io/managed-by":"Helm","app.kubernetes.io/name":"api-gateway","app.kubernetes.io/version":"1.16.0","argocd.argoproj.io/instance":"api-gateway","helm.sh/chart":"api-gateway-0.1.0"},"name":"api-gateway","namespace":"digital"},"spec":{"ingressClassName":"alb","rules":[{"host":"digigateway.mcollect.ai","http":{"paths":[{"backend":{"service":{"name":"api-gateway","port":{"number":8101}}},"path":"/","pathType":"Prefix"}]}}]}}
+  creationTimestamp: "2026-01-23T11:47:08Z"
+  finalizers:
+  - group.ingress.k8s.aws/mb-lb
+  generation: 1
+  labels:
+    app.kubernetes.io/instance: api-gateway
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/version: 1.16.0
+    argocd.argoproj.io/instance: api-gateway
+    helm.sh/chart: api-gateway-0.1.0
+  name: api-gateway
+  namespace: digital
+  resourceVersion: "9493370"
+  uid: c9a67996-463c-4aaa-8855-d9e65bd2cd95
+spec:
+  ingressClassName: alb
+  rules:
+  - host: digigateway.mcollect.ai
+    http:
+      paths:
+      - backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8101
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - hostname: mobicule-external-lb-1796742488.ap-south-1.elb.amazonaws.com
