@@ -1,0 +1,51 @@
+It is:
+👉 A microservices-based e-commerce app
+
+User flow:
+
+User → Frontend → Product Catalog → Cart → Redis
+
+Later (advanced):
+
+Frontend → Checkout → Payment / Shipping / Email
+
+
+
+Before deploying any application:
+
+I must understand:
+- language used
+- port used
+- dependencies
+- environment variables
+- service communication
+
+
+What to check:
+1. Language
+
+Look for:
+
+package.json → Node.js
+.go files → Go
+requirements.txt → Python
+
+Without this, Kubernetes becomes confusing.
+
+FINAL ARCHITECTURE (IMPORTANT)
+Frontend (8080)
+   ↓
+ProductCatalog (3550)
+
+Frontend (8080)
+   ↓
+CartService (7070)
+   ↓
+Redis (6379)
+
+
+
+1. Frontend:
+	a. Port: 8080
+	b. Language: Go  : deployment_details.go  Dockerfile  genproto  genproto.sh  go.mod  go.sum  handlers.go  main.go  middleware.go  money  packaging_info.go  README.md  rpc.go  static  templates  validator
+	c. 

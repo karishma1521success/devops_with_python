@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+
+metadata:
+  name: frontend-developer-binding
+  namespace:  frontend-dev
+
+  labels:
+    app.kubernetes.io/name: rbac
+    app.kubernetes.io/component: authorization
+    app.kubernetes.io/managed-by: platform-team
+    environment: frontend-dev
+    team: developer 
+
+subjects:
+  - kind: User
+    name: frontend-user
+    apiGroup: rbac.authorization.k8s.io
+  
+  - kind: Group
+    name: developer-team
+    apiGroup: rbac.authorization.k8s.io
+
+roleRef:
+  kind: Role
+  name: frontend-developer-role
+  apiGroup: rbac.authorization.k8s.io

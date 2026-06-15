@@ -1,0 +1,8 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: frontend-dev
+  labels:
+   env: dev
+   tier: frontend
+

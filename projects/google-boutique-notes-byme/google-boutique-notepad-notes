@@ -1,0 +1,137 @@
+It is:
+👉 A microservices-based e-commerce app
+
+User flow:
+
+User → Frontend → Product Catalog → Cart → Redis
+
+Later (advanced):
+
+Frontend → Checkout → Payment / Shipping / Email
+
+
+
+Before deploying any application:
+
+I must understand:
+- language used
+- port used
+- dependencies
+- environment variables
+- service communication
+
+
+What to check:
+1. Language
+
+Look for:
+
+package.json → Node.js
+.go files → Go    (port is defined either in main.go file or the server.go file)
+requirements.txt → Python
+
+Without this, Kubernetes becomes confusing.
+
+FINAL ARCHITECTURE (IMPORTANT)
+Frontend (8080)
+   ↓
+ProductCatalog (3550)
+
+Frontend (8080)
+   ↓
+CartService (7070)
+   ↓
+Redis (6379)
+
+
+
+1. Frontend:
+	a. Port: 8080
+	b. Language: Go  : deployment_details.go  Dockerfile  genproto  genproto.sh  go.mod  go.sum  handlers.go  main.go  middleware.go  money  packaging_info.go  README.md  rpc.go  static  templates  validator
+	
+			Every Go service has:
+                        main.go → entry point
+			go.mod → dependencies
+			handlers.go → logic
+
+	c. Dependencies: 
+			Frontend --> productcatalog
+			Frontend --> cartSvc
+			Frontend --> recommendationSvc
+			Frontend --> checkoutSVC
+			Frontend --> shippingSvc
+			Frontend --> adSvcAddr 
+			Frontend --> collectorAddr
+			Frontend --> shoppingAssistantSvc
+			 
+			 
+					 type frontendServer struct {
+       					 	productCatalogSvcAddr string
+       						 productCatalogSvcConn *grpc.ClientConn
+
+        					currencySvcAddr string
+        					currencySvcConn *grpc.ClientConn
+
+      						  cartSvcAddr string
+       						 cartSvcConn *grpc.ClientConn
+		
+       						 recommendationSvcAddr string
+          				      recommendationSvcConn *grpc.ClientConn
+
+       						 checkoutSvcAddr string
+      				  checkoutSvcConn *grpc.ClientConn
+
+       					 shippingSvcAddr string
+       				 shippingSvcConn *grpc.ClientConn
+
+       						 adSvcAddr string
+       					 adSvcConn *grpc.ClientConn
+		
+      					  collectorAddr string
+      					  collectorConn *grpc.ClientConn
+
+       				 shoppingAssistantSvcAddr string
+					}
+
+	d. Service communications: 
+			As frontend is talking with the product catalog and cart service. 
+			So frontend will communicate using the http://productcatalogservice:port  and http://cartsvc:port  (kubernetes DNS name)
+			
+			
+			
+2. Product catalog
+ 		a. Language: Go ( catalog_loader.go  Dockerfile  genproto  genproto.sh  go.mod  go.sum  product_catalog.go  product_catalog_test.go  products.json  README.md  server.go)     --> product_catalog.go -- file    , ---> go.mod - dependencies                  ---> 
+ 		b. Port: 3550
+ 		
+ 		
+3. Cart service
+
+		a. Language - > c#
+		b. port --> 7070
+		
+4. Redis:   a. port: 6379		
+		
+		
+		
+		
+		
+		
+Frontend (Go) → 8080
+   ↓
+ProductCatalog (Go) → 3550
+
+Frontend (Go)
+   ↓
+CartService (.NET) → 7070
+   ↓
+Redis → 6379
+
+
+
+
+
+
+
+
+
+
