@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-affinity-preffered-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-affinity-failure-label
+  template:
+    metadata:
+      labels:
+        app: node-affinity-failure-label
+    spec:
+      tolerations:
+        - key: "node"
+          operator: "Equal"
+          value: "worker2"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: "storage"
+                    operator: "In"
+                    values:
+                      - "na"
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "200m"
+              memory: "200Mi"

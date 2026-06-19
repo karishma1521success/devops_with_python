@@ -1,4 +1,3 @@
-Task 1: Create Deployment
 
 Create a deployment named nginx-deployment with:
 
@@ -371,8 +370,7 @@ kubectl describe svc nginx-clusterip
 Question
 
 What happens if selector doesn't match any pod?
-It will not create the service. because to create the service. selector and labels must match all the expressions. 
-selectors follow the logical AND.
+Service gets created but no endpoints are attached because selector doesn't match any pod labels. selectors follow the logical AND.
 
 
 
@@ -543,6 +541,107 @@ Only frontend service should route traffic to frontend pods.
 Only backend service should route traffic to backend pods.
 
 
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ cat frontend.yaml 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deploy
+  labels:
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: nginx
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: frontend
+spec:
+  type: ClusterIP
+  selector:
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ kubectl get endpoints frontend-service
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME               ENDPOINTS                     AGE
+frontend-service   10.244.1.6:80,10.244.2.7:80   36m
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ kubectl get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP           NODE               NOMINATED NODE   READINESS GATES
+backend-deploy-6b6bb8bbc4-8hmkf    1/1     Running   0          96s   10.244.2.8   learning-worker2   <none>           <none>
+backend-deploy-6b6bb8bbc4-rwnjj    1/1     Running   0          96s   10.244.1.7   learning-worker    <none>           <none>
+frontend-deploy-66f8c48cdd-c22hk   1/1     Running   0          36m   10.244.2.7   learning-worker2   <none>           <none>
+frontend-deploy-66f8c48cdd-gjwl8   1/1     Running   0          36m   10.244.1.6   learning-worker    <none>           <none>
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ cat backend.yaml 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+  labels:
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      tier: backend
+  template:
+    metadata:
+      labels:
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: nginx
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  selector:
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ kubectl get endpoints backend-service
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME              ENDPOINTS                     AGE
+backend-service   10.244.1.7:80,10.244.2.8:80   2m21s
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ kubectl get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP           NODE               NOMINATED NODE   READINESS GATES
+backend-deploy-6b6bb8bbc4-8hmkf    1/1     Running   0          2m29s   10.244.2.8   learning-worker2   <none>           <none>
+backend-deploy-6b6bb8bbc4-rwnjj    1/1     Running   0          2m29s   10.244.1.7   learning-worker    <none>           <none>
+frontend-deploy-66f8c48cdd-c22hk   1/1     Running   0          37m     10.244.2.7   learning-worker2   <none>           <none>
+frontend-deploy-66f8c48cdd-gjwl8   1/1     Running   0          37m     10.244.1.6   learning-worker    <none>           <none>
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs/lab5-service$ 
+
+
 
 
 
@@ -563,9 +662,23 @@ Type: ClusterIP
 Delete all pods one by one and observe:
 
 kubectl get endpoints -w
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs$ kubectl get endpoint -w
+error: the server doesn't have a resource type "endpoint"
+karishma@HO-Desk-D3:~/Documents/devops_with_python/07_kubernetes/k8s_labs$ kubectl get endpoints 
+-w
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME            ENDPOINTS                                     AGE
+kubernetes      172.18.0.2:6443                               6d
+nginx-service   10.244.1.8:80,10.244.2.10:80,10.244.2.11:80   72s
+nginx-service   10.244.2.10:80,10.244.2.11:80                 107s
+nginx-service   10.244.1.9:80,10.244.2.10:80,10.244.2.11:80   110s
+nginx-service   10.244.1.9:80,10.244.2.11:80                  6m13s
+nginx-service   10.244.1.10:80,10.244.1.9:80,10.244.2.11:80   6m16s
+
 
 Understand how Kubernetes dynamically updates service endpoints.
-
+I observe that when I delete the pod the service updates the endpoints with other available endpoint meanwhile replica set is creating the new pod to maintain the desired state. 
+when new pod spin up by the replica set and managed by the service updates the endpoints containing all the endpoint consists the new one as well
 
 
 
@@ -577,12 +690,43 @@ Expected Interview Topics After This Lab
 Be ready to answer:
 
 Service vs Pod
+Service is a stable IP address by which we can access application irrespective of the pod lifecyle. it also provides load balancing. 
+pod is the smallest and deployable unit of kubernetes. 
+
+
 Why Pod IP is not reliable
+Pod is a wrapper of one or more containers. and container is ephemeral in nature. they can die anytime. so hence pod ip is not reliable.
+
 ClusterIP vs NodePort vs LoadBalancer
+ClusterIP: provide accessiblity within the cluster
+NodePort: provide accessbilily outside the cluster using the node IP
+LoadBalancer: provide accessbility outside the cluster. 
+
+
 What is Service Discovery
+Service Discovery is a way by which service find the pods using the labels and selectors. irrespective of the pod lifecyle.
+
+
 What are Endpoints
+Endpoints are the pod IP with their port which they will redirect on.
+
+
 How Service Selectors work
+service selectores work based on Logical AND. labels must satisfy all the selector expressions.
+
+
 How Load Balancing works
+dont' know
+
+
 Why Services are needed
+Service are needed because it provide the loadbalancing feature and stable IP address to redirect to the application hosted on pods. 
+Used to communicate between pods using the service name. 
+
+
 What happens when Pod IP changes
+If that pod is created using the deployment. then it will recreate the pod and service will update the endpoints of the new pod and remove the old pod endpoint.
+
+
 DNS in Kubernetes
+DNS is a domain server which resolves the service name to the IP address. 
