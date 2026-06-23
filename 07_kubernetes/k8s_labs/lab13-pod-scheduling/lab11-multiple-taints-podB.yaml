@@ -2,21 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-affinity-preffered-deployment
+  name: node-multiple-taints-deployment-podb
+  annotations:
+    reason: "podB-matches-only-second-taint"
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: node-affinity-failure-label
+      app: "podB"
   template:
     metadata:
       labels:
-        app: node-affinity-failure-label
+        app: "podB"
     spec:
       tolerations:
-        - key: "node"
+        - key: "nodeName"
           operator: "Equal"
-          value: "worker2"
+          value: "learning-worker"
           effect: "NoSchedule"
       affinity:
         nodeAffinity:

@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-multiple-taints-deployment-podc
+  annotations:
+    reason: "podC-matches-all-taints"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "podC"
+  template:
+    metadata:
+      labels:
+        app: "podC"
+    spec:
+      tolerations:
+        - key: "nodeName"
+          operator: "Equal"
+          value: "learning-worker"
+          effect: "NoSchedule"
+        - key: "node"
+          operator: "Equal"
+          value: "worker1"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: "storage"
+                    operator: "In"
+                    values:
+                      - "na"
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "200m"
+              memory: "200Mi"
