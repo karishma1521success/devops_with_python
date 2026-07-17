@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: huge-request-pod-deploy
+  namespace: default
+  labels:
+    app: huge-request-pod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: huge-request-pod
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      labels:
+        app: huge-request-pod
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always  # because I want my application to be run always.
+      tolerations:
+        - key: "node"
+          operator: "Equal"
+          value: "worker1"
+          effect: "NoSchedule"
+        - key: "nodeName"
+          operator: "Equal"
+          value: "learning-worker"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          # Mandotary conditions
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "env"
+                    operator: "In"
+                    values:
+                      - "uat"
+          # Preferred condition
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: "storage"
+                    operator: "In"
+                    values:
+                      - "hdd"
+      containers:
+        - name: nginx
+          image: nginx
+          imagePullPolicy: Always
+          ports:
+            - protocol: TCP
+              containerPort: 80
+          resources:
+            requests:
+              cpu: "100000000000m"
+              memory: "1280000000000000Mi"
+            limits:
+              cpu: "5000000000000000000000000000000m"
+              memory: "256000000000000000000000000Mi"

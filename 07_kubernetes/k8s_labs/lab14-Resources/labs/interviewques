@@ -1,0 +1,18 @@
+Interview Questions You Should Be Able To Answer After This Lab
+
+Do not look up answers yet.
+
+Try answering yourself after completing the tasks:
+
+Why does Kubernetes scheduler use Requests instead of Limits?
+Can a pod with 100m request consume 500m CPU?
+What happens when memory limit is exceeded?
+What happens when CPU limit is exceeded?
+Why can a pod remain Pending even if node CPU usage looks low?
+Difference between Capacity and Allocatable?
+What is resource overcommitment?
+How do requests affect scheduling?
+What command would you use first when a pod is Pending?
+Have you ever troubleshooted a scheduling failure? Explain.
+
+Complete Tasks 1–8 and share your YAMLs, commands, observations, and outputs. I'll review them like a real interviewer and point out gaps in your understanding.
